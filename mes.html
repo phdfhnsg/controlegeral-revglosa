@@ -53,20 +53,22 @@ body{
     border:1px solid #a678c1;
 }
 
+/* 🔥 BUSCA CENTRALIZADA */
 .controls{
     display:flex;
-    gap:10px;
+    justify-content:center;
     margin-bottom:10px;
 }
 
 .controls input{
-    flex:1;
+    width:300px; /* 🔥 menor */
     padding:8px;
     border-radius:6px;
     border:1px solid #a678c1;
     font-size:13px;
 }
 
+/* TABELA */
 .table-box{
     background:#ffffff;
     padding:10px;
@@ -98,6 +100,7 @@ th:nth-child(7), td:nth-child(7){
 .status-ok{ color:#a678c1; }
 .status-x{ color:#d3625d; }
 
+/* ÁREA BOTÃO */
 .area-botoes{
     background:#721552;
     padding:15px;
@@ -125,9 +128,9 @@ th:nth-child(7), td:nth-child(7){
 <div class="kpi"><p id="x">0</p><small>Pendentes</small></div>
 </div>
 
+<!-- 🔥 BUSCA CENTRAL -->
 <div class="controls">
 <input type="text" id="busca" placeholder="🔍 Buscar..." oninput="filtrarTabela()">
-<button class="btn btn-success btn-sm" onclick="exportarCSV()">💾 Exportar Excel</button>
 </div>
 
 <div class="table-box">
@@ -170,35 +173,6 @@ function filtrarTabela(){
     document.querySelectorAll("#tabela tbody tr").forEach(tr=>{
         tr.style.display = tr.innerText.toLowerCase().includes(termo) ? "" : "none";
     });
-}
-
-/* EXPORT */
-function exportarCSV(){
-    let csv="DATA,SEQ,TIPO,ÁREA,STATUS,PRAZO,OBSERVAÇÕES\n";
-
-    document.querySelectorAll("#tabela tbody tr").forEach(tr=>{
-        const c=tr.querySelectorAll("td");
-
-        let linha=[
-            c[0].innerText,
-            c[1].innerText,
-            c[2].querySelector("select").value,
-            c[3].querySelector("select").value,
-            c[4].innerText,
-            c[5].querySelector("input").value,
-            c[6].innerText
-        ];
-
-        csv+=linha.map(v=>`"${v}"`).join(",")+"\n";
-    });
-
-    const blob=new Blob([csv],{type:"text/csv"});
-    const url=URL.createObjectURL(blob);
-
-    const a=document.createElement("a");
-    a.href=url;
-    a.download="controle_"+MES_ATUAL+".csv";
-    a.click();
 }
 
 /* KPIs */
