@@ -27,6 +27,17 @@ body{
     margin-bottom:10px;
 }
 
+.back{
+    margin-bottom:10px;
+    display:inline-block;
+    text-decoration:none;
+    background:#1e1f21;
+    color:#ececec;
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:12px;
+}
+
 .kpis{
     display:flex;
     justify-content:center;
@@ -82,7 +93,7 @@ thead th{
 /* 🔥 AJUSTES DE TAMANHO */
 th:nth-child(1), td:nth-child(1){ width:110px; } /* DATA */
 th:nth-child(2), td:nth-child(2){ width:90px; }  /* SEQ */
-th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
+th:nth-child(7), td:nth-child(7){ width:110px; } /* PRAZO (ajustado por causa da remoção) */
 
 /* STATUS */
 .status-ok{ color:#a678c1; cursor:pointer; }
@@ -99,6 +110,8 @@ th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
 </head>
 
 <body>
+
+<a class="back" href="index.html">← Voltar</a>
 
 <div class="header" id="titulo"></div>
 
@@ -123,7 +136,6 @@ th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
 <th>TÉCNICA | MÉDICA</th>
 <th>IMPRESSÃO</th>
 <th>STATUS PLANILHA</th>
-<th>PLANILHA</th>
 <th>PRAZO</th>
 <th>REVISÃO PLANILHA</th>
 <th>OBSERVAÇÕES</th>
@@ -142,9 +154,28 @@ th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
 
 <script>
 
-const STORAGE_KEY = "controle";
+/* 🔥 MÊS DINÂMICO */
+const params = new URLSearchParams(window.location.search);
+const MES_ATUAL = params.get("mes") || "geral";
 
-/* KPI AGORA SÓ STATUS PLANILHA */
+const nomesMeses = {
+    marco: "MARÇO",
+    abril: "ABRIL",
+    maio: "MAIO",
+    junho: "JUNHO",
+    julho: "JULHO",
+    agosto: "AGOSTO",
+    setembro: "SETEMBRO",
+    outubro: "OUTUBRO",
+    novembro: "NOVEMBRO",
+    dezembro: "DEZEMBRO"
+};
+
+document.getElementById("titulo").innerText = nomesMeses[MES_ATUAL] || MES_ATUAL.toUpperCase();
+
+const STORAGE_KEY = "controle_" + MES_ATUAL;
+
+/* KPI */
 function atualizarKPIs(){
     const linhas = document.querySelectorAll("tbody tr");
 
@@ -181,8 +212,6 @@ const tr=`
 <td contenteditable="true"></td>
 
 <td class="status-x">❌</td>
-
-<td contenteditable="true"></td>
 
 <td><input class="form-control form-control-sm text-center" placeholder="dd/mm/aaaa"></td>
 
