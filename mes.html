@@ -27,17 +27,6 @@ body{
     margin-bottom:10px;
 }
 
-.back{
-    margin-bottom:10px;
-    display:inline-block;
-    text-decoration:none;
-    background:#1e1f21;
-    color:#ececec;
-    padding:6px 10px;
-    border-radius:6px;
-    font-size:12px;
-}
-
 .kpis{
     display:flex;
     justify-content:center;
@@ -47,16 +36,15 @@ body{
 
 .kpi{
     padding:8px 14px;
+    border:1px solid #a678c1;
     border-radius:8px;
     text-align:center;
-    border:1px solid #a678c1;
-    min-width:110px;
 }
 
 .kpi p{
-    margin:0;
     font-size:22px;
     font-weight:700;
+    margin:0;
 }
 
 .controls{
@@ -74,18 +62,16 @@ body{
 
 /* TABELA */
 .table-box{
-    background:#ffffff;
+    background:#fff;
     padding:10px;
     border-radius:10px;
     overflow-x:auto;
-    border:1px solid #a678c1;
 }
 
 th, td{
     text-align:center;
     font-size:12px;
     padding:6px;
-    white-space:nowrap;
 }
 
 thead th{
@@ -93,8 +79,14 @@ thead th{
     color:#ececec;
 }
 
-.status-ok{ color:#a678c1; }
-.status-x{ color:#d3625d; }
+/* 🔥 AJUSTES DE TAMANHO */
+th:nth-child(1), td:nth-child(1){ width:110px; } /* DATA */
+th:nth-child(2), td:nth-child(2){ width:90px; }  /* SEQ */
+th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
+
+/* STATUS */
+.status-ok{ color:#a678c1; cursor:pointer; }
+.status-x{ color:#d3625d; cursor:pointer; }
 
 .area-botoes{
     background:#721552;
@@ -108,7 +100,6 @@ thead th{
 
 <body>
 
-<a class="back" href="index.html">← Voltar</a>
 <div class="header" id="titulo"></div>
 
 <div class="kpis">
@@ -151,44 +142,19 @@ thead th{
 
 <script>
 
-const params = new URLSearchParams(window.location.search);
-const MES_ATUAL = params.get("mes") || "geral";
+const STORAGE_KEY = "controle";
 
-const nomesMeses = {
-    marco: "MARÇO",
-    abril: "ABRIL",
-    maio: "MAIO",
-    junho: "JUNHO",
-    julho: "JULHO",
-    agosto: "AGOSTO",
-    setembro: "SETEMBRO",
-    outubro: "OUTUBRO",
-    novembro: "NOVEMBRO",
-    dezembro: "DEZEMBRO"
-};
-
-document.getElementById("titulo").innerText = nomesMeses[MES_ATUAL] || MES_ATUAL.toUpperCase();
-
-const STORAGE_KEY = "controle_" + MES_ATUAL;
-
-/* BUSCA */
-function filtrarTabela(){
-    const termo=document.getElementById("busca").value.toLowerCase();
-    document.querySelectorAll("#tabela tbody tr").forEach(tr=>{
-        tr.style.display = tr.innerText.toLowerCase().includes(termo) ? "" : "none";
-    });
-}
-
-/* KPI */
+/* KPI AGORA SÓ STATUS PLANILHA */
 function atualizarKPIs(){
-    document.getElementById("total").innerText =
-        document.querySelectorAll("tbody tr").length;
+    const linhas = document.querySelectorAll("tbody tr");
+
+    document.getElementById("total").innerText = linhas.length;
 
     document.getElementById("ok").innerText =
-        document.querySelectorAll(".status-ok").length;
+        document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
 
     document.getElementById("x").innerText =
-        document.querySelectorAll(".status-x").length;
+        document.querySelectorAll("tbody tr td:nth-child(6).status-x").length;
 }
 
 /* ADD */
@@ -218,9 +184,9 @@ const tr=`
 
 <td contenteditable="true"></td>
 
-<td><input class="form-control form-control-sm"></td>
+<td><input class="form-control form-control-sm text-center" placeholder="dd/mm/aaaa"></td>
 
-<td contenteditable="true"></td>
+<td class="status-x">❌</td>
 
 <td contenteditable="true"></td>
 
@@ -256,10 +222,18 @@ document.addEventListener("click",(e)=>{
     }
 });
 
+/* BUSCA */
+function filtrarTabela(){
+    const termo=document.getElementById("busca").value.toLowerCase();
+    document.querySelectorAll("tbody tr").forEach(tr=>{
+        tr.style.display = tr.innerText.toLowerCase().includes(termo) ? "" : "none";
+    });
+}
+
 /* SALVAR */
 function salvarDados(){
     const dados=[];
-    document.querySelectorAll("#tabela tbody tr").forEach(tr=>{
+    document.querySelectorAll("tbody tr").forEach(tr=>{
         dados.push(tr.innerHTML);
     });
     localStorage.setItem(STORAGE_KEY,JSON.stringify(dados));
