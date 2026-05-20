@@ -38,7 +38,7 @@ body{
     font-size:12px;
 }
 
-/* 🔥 KPIs CENTRALIZADOS */
+/* KPIs */
 .kpis{
     display:flex;
     justify-content:center;
@@ -48,21 +48,19 @@ body{
 
 .kpi{
     background:#ececec;
-    padding:8px 14px; /* 🔥 menor altura */
+    padding:8px 14px;
     border-radius:8px;
     text-align:center;
     border:1px solid #a678c1;
     min-width:110px;
 }
 
-/* 🔥 NÚMEROS MAIORES */
 .kpi p{
     margin:0;
-    font-size:22px; /* 🔥 aumentado */
+    font-size:22px;
     font-weight:700;
 }
 
-/* 🔥 TEXTO MENOR */
 .kpi small{
     font-size:11px;
 }
@@ -175,7 +173,21 @@ th:nth-child(7), td:nth-child(7){
 const params = new URLSearchParams(window.location.search);
 const MES_ATUAL = params.get("mes") || "geral";
 
-document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
+/* 🔥 MAPA DE MESES COM ACENTO */
+const nomesMeses = {
+    marco: "MARÇO",
+    abril: "ABRIL",
+    maio: "MAIO",
+    junho: "JUNHO",
+    julho: "JULHO",
+    agosto: "AGOSTO",
+    setembro: "SETEMBRO",
+    outubro: "OUTUBRO",
+    novembro: "NOVEMBRO",
+    dezembro: "DEZEMBRO"
+};
+
+document.getElementById("titulo").innerText = nomesMeses[MES_ATUAL] || MES_ATUAL.toUpperCase();
 
 const STORAGE_KEY = "controle_" + MES_ATUAL;
 
