@@ -164,15 +164,15 @@ const STORAGE_KEY = "controle_" + MES_ATUAL;
 document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
 
 /* =========================
-   KPI CORRETO (SÓ COLUNA 6)
+   KPI (ATUALIZA EM TEMPO REAL)
 ========================= */
 function atualizarKPIs(){
 
     const linhas = document.querySelectorAll("tbody tr");
 
     let total = 0;
-    let concluidos = 0;
-    let pendentes = 0;
+    let ok = 0;
+    let pend = 0;
 
     linhas.forEach(tr => {
         const cell = tr.querySelector("td:nth-child(6)");
@@ -181,15 +181,15 @@ function atualizarKPIs(){
         total++;
 
         if(cell.classList.contains("status-ok")){
-            concluidos++;
+            ok++;
         } else {
-            pendentes++;
+            pend++;
         }
     });
 
     document.getElementById("total").innerText = total;
-    document.getElementById("ok").innerText = concluidos;
-    document.getElementById("x").innerText = pendentes;
+    document.getElementById("ok").innerText = ok;
+    document.getElementById("x").innerText = pend;
 }
 
 /* =========================
@@ -239,7 +239,7 @@ atualizarKPIs();
 }
 
 /* =========================
-   TOGGLE STATUS
+   CLICK (AGORA ATUALIZA KPI NA HORA)
 ========================= */
 document.addEventListener("click",(e)=>{
 
@@ -247,12 +247,16 @@ document.addEventListener("click",(e)=>{
         e.target.classList.remove("status-ok");
         e.target.classList.add("status-x");
         e.target.innerHTML="❌";
+
+        atualizarKPIs(); // 🔥 FIX AQUI
     }
 
     else if(e.target.classList.contains("status-x")){
         e.target.classList.remove("status-x");
         e.target.classList.add("status-ok");
         e.target.innerHTML="✅";
+
+        atualizarKPIs(); // 🔥 FIX AQUI
     }
 
     if(e.target.classList.contains("btn-delete")){
@@ -297,12 +301,10 @@ function carregarDados(){
 /* AUTO SAVE */
 document.addEventListener("input", ()=>{
     salvarDados();
-    atualizarKPIs();
 });
 
 document.addEventListener("change", ()=>{
     salvarDados();
-    atualizarKPIs();
 });
 
 carregarDados();
