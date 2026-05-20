@@ -89,8 +89,17 @@ thead th{
     color:#ececec;
 }
 
-.status-ok{ color:#2ecc71; cursor:pointer; font-size:18px; }
-.status-x{ color:#d3625d; cursor:pointer; font-size:18px; }
+.status-ok{
+    color:#2ecc71;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.status-x{
+    color:#d3625d;
+    cursor:pointer;
+    font-size:18px;
+}
 
 .area-botoes{
     background:#721552;
@@ -152,35 +161,40 @@ const MES_ATUAL = params.get("mes") || "geral";
 
 const STORAGE_KEY = "controle_" + MES_ATUAL;
 
-/* TITULO */
 document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
 
-/* KPI 100% CORRETO */
+/* =========================
+   KPI CORRETO (SÓ COLUNA 6)
+========================= */
 function atualizarKPIs(){
 
     const linhas = document.querySelectorAll("tbody tr");
 
-    let total = linhas.length;
-    let ok = 0;
-    let pend = 0;
+    let total = 0;
+    let concluidos = 0;
+    let pendentes = 0;
 
-    linhas.forEach(tr=>{
-        const statusCell = tr.querySelector("td:nth-child(6)");
+    linhas.forEach(tr => {
+        const cell = tr.querySelector("td:nth-child(6)");
+        if(!cell) return;
 
-        if(!statusCell) return;
+        total++;
 
-        const txt = statusCell.innerText.trim();
-
-        if(txt === "✅") ok++;
-        if(txt === "❌") pend++;
+        if(cell.classList.contains("status-ok")){
+            concluidos++;
+        } else {
+            pendentes++;
+        }
     });
 
     document.getElementById("total").innerText = total;
-    document.getElementById("ok").innerText = ok;
-    document.getElementById("x").innerText = pend;
+    document.getElementById("ok").innerText = concluidos;
+    document.getElementById("x").innerText = pendentes;
 }
 
-/* ADD LINHA */
+/* =========================
+   ADD LINHA
+========================= */
 function adicionarLinha(){
 
 const tr = document.createElement("tr");
@@ -224,7 +238,9 @@ salvarDados();
 atualizarKPIs();
 }
 
-/* CLICK STATUS */
+/* =========================
+   TOGGLE STATUS
+========================= */
 document.addEventListener("click",(e)=>{
 
     if(e.target.classList.contains("status-ok")){
