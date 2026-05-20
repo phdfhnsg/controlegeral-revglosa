@@ -89,8 +89,8 @@ thead th{
     color:#ececec;
 }
 
-.status-ok{ color:#a678c1; cursor:pointer; }
-.status-x{ color:#d3625d; cursor:pointer; }
+.status-ok{ color:#2ecc71; cursor:pointer; font-size:18px; }
+.status-x{ color:#d3625d; cursor:pointer; font-size:18px; }
 
 .area-botoes{
     background:#721552;
@@ -152,34 +152,32 @@ const MES_ATUAL = params.get("mes") || "geral";
 
 const STORAGE_KEY = "controle_" + MES_ATUAL;
 
-const nomesMeses = {
-    marco: "MARÇO",
-    abril: "ABRIL",
-    maio: "MAIO",
-    junho: "JUNHO",
-    julho: "JULHO",
-    agosto: "AGOSTO",
-    setembro: "SETEMBRO",
-    outubro: "OUTUBRO",
-    novembro: "NOVEMBRO",
-    dezembro: "DEZEMBRO"
-};
+/* TITULO */
+document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
 
-document.getElementById("titulo").innerText =
-    nomesMeses[MES_ATUAL] || MES_ATUAL.toUpperCase();
-
-/* KPI SOMENTE STATUS PLANILHA (COLUNA 6) */
+/* KPI 100% CORRETO */
 function atualizarKPIs(){
 
-    const statusCells = document.querySelectorAll("tbody tr td:nth-child(6)");
+    const linhas = document.querySelectorAll("tbody tr");
 
-    document.getElementById("total").innerText = statusCells.length;
+    let total = linhas.length;
+    let ok = 0;
+    let pend = 0;
 
-    document.getElementById("ok").innerText =
-        document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
+    linhas.forEach(tr=>{
+        const statusCell = tr.querySelector("td:nth-child(6)");
 
-    document.getElementById("x").innerText =
-        document.querySelectorAll("tbody tr td:nth-child(6).status-x").length;
+        if(!statusCell) return;
+
+        const txt = statusCell.innerText.trim();
+
+        if(txt === "✅") ok++;
+        if(txt === "❌") pend++;
+    });
+
+    document.getElementById("total").innerText = total;
+    document.getElementById("ok").innerText = ok;
+    document.getElementById("x").innerText = pend;
 }
 
 /* ADD LINHA */
@@ -242,12 +240,11 @@ document.addEventListener("click",(e)=>{
     }
 
     if(e.target.classList.contains("btn-delete")){
-        if(confirm("Excluir linha?")){
-            e.target.closest("tr").remove();
-            salvarDados();
-            atualizarKPIs();
-        }
+        e.target.closest("tr").remove();
+        salvarDados();
+        atualizarKPIs();
     }
+
 });
 
 /* BUSCA */
@@ -259,7 +256,7 @@ function filtrarTabela(){
     });
 }
 
-/* SALVAR (AGORA CORRETO COM CLASSES) */
+/* SALVAR */
 function salvarDados(){
     const dados = [];
 
@@ -281,7 +278,7 @@ function carregarDados(){
     atualizarKPIs();
 }
 
-/* INPUT CHANGE */
+/* AUTO SAVE */
 document.addEventListener("input", ()=>{
     salvarDados();
     atualizarKPIs();
