@@ -150,10 +150,9 @@ th:nth-child(7), td:nth-child(7){
 
 </div>
 
-<!-- 🔥 BOTÕES -->
+<!-- 🔥 APENAS BOTÃO DE ADICIONAR -->
 <div class="area-botoes">
     <button class="btn btn-primary btn-add" onclick="adicionarLinha()">+ Adicionar Linha</button>
-    <button class="btn btn-danger btn-add" onclick="limparTabela()">🧹 Limpar Tabela</button>
 </div>
 
 <script>
@@ -270,15 +269,6 @@ document.addEventListener("click",(e)=>{
         }
     }
 });
-
-/* LIMPAR */
-function limparTabela(){
-    if(confirm("Tem certeza que deseja apagar TODA a tabela?")){
-        document.querySelector("tbody").innerHTML="";
-        salvarDados();
-        atualizarKPIs();
-    }
-}
 
 /* SALVAR */
 function salvarDados(){
