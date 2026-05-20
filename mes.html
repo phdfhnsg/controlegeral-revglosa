@@ -90,11 +90,6 @@ thead th{
     color:#ececec;
 }
 
-/* 🔥 AJUSTES DE TAMANHO */
-th:nth-child(1), td:nth-child(1){ width:110px; } /* DATA */
-th:nth-child(2), td:nth-child(2){ width:90px; }  /* SEQ */
-th:nth-child(7), td:nth-child(7){ width:110px; } /* PRAZO (ajustado por causa da remoção) */
-
 /* STATUS */
 .status-ok{ color:#a678c1; cursor:pointer; }
 .status-x{ color:#d3625d; cursor:pointer; }
@@ -175,17 +170,18 @@ document.getElementById("titulo").innerText = nomesMeses[MES_ATUAL] || MES_ATUAL
 
 const STORAGE_KEY = "controle_" + MES_ATUAL;
 
-/* KPI */
+/* KPI (SOMENTE STATUS PLANILHA - COLUNA 6) */
 function atualizarKPIs(){
-    const linhas = document.querySelectorAll("tbody tr");
 
-    document.getElementById("total").innerText = linhas.length;
+    const total = document.querySelectorAll("tbody tr td:nth-child(6)").length;
 
-    document.getElementById("ok").innerText =
-        document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
+    const ok = document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
 
-    document.getElementById("x").innerText =
-        document.querySelectorAll("tbody tr td:nth-child(6).status-x").length;
+    const x = document.querySelectorAll("tbody tr td:nth-child(6).status-x").length;
+
+    document.getElementById("total").innerText = total;
+    document.getElementById("ok").innerText = ok;
+    document.getElementById("x").innerText = x;
 }
 
 /* ADD */
@@ -231,13 +227,14 @@ salvarDados();
 atualizarKPIs();
 }
 
-/* CLICK */
+/* CLICK (TODOS OS STATUS FUNCIONAM IGUAL) */
 document.addEventListener("click",(e)=>{
 
     if(e.target.classList.contains("status-ok")){
         e.target.className="status-x";
         e.target.innerHTML="❌";
-    } else if(e.target.classList.contains("status-x")){
+    } 
+    else if(e.target.classList.contains("status-x")){
         e.target.className="status-ok";
         e.target.innerHTML="✅";
     }
