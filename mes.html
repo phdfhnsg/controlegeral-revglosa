@@ -38,7 +38,6 @@ body{
     font-size:12px;
 }
 
-/* KPIs */
 .kpis{
     display:flex;
     justify-content:center;
@@ -47,7 +46,6 @@ body{
 }
 
 .kpi{
-    background:#ececec;
     padding:8px 14px;
     border-radius:8px;
     text-align:center;
@@ -61,11 +59,6 @@ body{
     font-weight:700;
 }
 
-.kpi small{
-    font-size:11px;
-}
-
-/* BUSCA */
 .controls{
     display:flex;
     justify-content:center;
@@ -77,7 +70,6 @@ body{
     padding:8px;
     border-radius:6px;
     border:1px solid #a678c1;
-    font-size:13px;
 }
 
 /* TABELA */
@@ -90,29 +82,20 @@ body{
 }
 
 th, td{
-    text-align:center !important;
-    vertical-align:middle !important;
-    font-size:13px;
-    padding:6px !important;
+    text-align:center;
+    font-size:12px;
+    padding:6px;
     white-space:nowrap;
 }
 
 thead th{
-    background:#1e1f21 !important;
-    color:#ececec !important;
-}
-
-th:nth-child(7), td:nth-child(7){
-    width:50%;
-    min-width:400px;
-    white-space:normal;
-    text-align:left;
+    background:#1e1f21;
+    color:#ececec;
 }
 
 .status-ok{ color:#a678c1; }
 .status-x{ color:#d3625d; }
 
-/* BOTÃO */
 .area-botoes{
     background:#721552;
     padding:15px;
@@ -120,18 +103,12 @@ th:nth-child(7), td:nth-child(7){
     text-align:center;
     margin-top:10px;
 }
-
-.btn-add{
-    font-size:16px;
-    padding:8px 20px;
-}
 </style>
 </head>
 
 <body>
 
 <a class="back" href="index.html">← Voltar</a>
-
 <div class="header" id="titulo"></div>
 
 <div class="kpis">
@@ -151,11 +128,15 @@ th:nth-child(7), td:nth-child(7){
 <tr>
 <th>DATA</th>
 <th>SEQ</th>
-<th>TIPO</th>
-<th>ÁREA</th>
-<th>STATUS</th>
+<th>INTERNADO | EXTERNO</th>
+<th>TÉCNICA | MÉDICA</th>
+<th>IMPRESSÃO</th>
+<th>STATUS PLANILHA</th>
+<th>PLANILHA</th>
 <th>PRAZO</th>
+<th>REVISÃO PLANILHA</th>
 <th>OBSERVAÇÕES</th>
+<th>FECHADO TASY</th>
 <th>AÇÕES</th>
 </tr>
 </thead>
@@ -165,7 +146,7 @@ th:nth-child(7), td:nth-child(7){
 </div>
 
 <div class="area-botoes">
-    <button class="btn btn-primary btn-add" onclick="adicionarLinha()">+ Adicionar Linha</button>
+<button class="btn btn-primary" onclick="adicionarLinha()">+ Adicionar Linha</button>
 </div>
 
 <script>
@@ -173,7 +154,6 @@ th:nth-child(7), td:nth-child(7){
 const params = new URLSearchParams(window.location.search);
 const MES_ATUAL = params.get("mes") || "geral";
 
-/* 🔥 MAPA DE MESES COM ACENTO */
 const nomesMeses = {
     marco: "MARÇO",
     abril: "ABRIL",
@@ -199,7 +179,7 @@ function filtrarTabela(){
     });
 }
 
-/* KPIs */
+/* KPI */
 function atualizarKPIs(){
     document.getElementById("total").innerText =
         document.querySelectorAll("tbody tr").length;
@@ -211,7 +191,7 @@ function atualizarKPIs(){
         document.querySelectorAll(".status-x").length;
 }
 
-/* ADD LINHA */
+/* ADD */
 function adicionarLinha(){
 const tr=`
 <tr>
@@ -219,24 +199,32 @@ const tr=`
 <td contenteditable="true"></td>
 
 <td>
-<select class="form-select form-select-sm text-center">
+<select class="form-select form-select-sm">
 <option>INTERNADO</option>
 <option>EXTERNO</option>
 </select>
 </td>
 
 <td>
-<select class="form-select form-select-sm text-center">
+<select class="form-select form-select-sm">
 <option>TÉCNICA</option>
 <option>MÉDICA</option>
 </select>
 </td>
 
+<td contenteditable="true"></td>
+
 <td class="status-x">❌</td>
 
-<td><input class="form-control form-control-sm text-center"></td>
+<td contenteditable="true"></td>
+
+<td><input class="form-control form-control-sm"></td>
 
 <td contenteditable="true"></td>
+
+<td contenteditable="true"></td>
+
+<td class="status-x">❌</td>
 
 <td><button class="btn btn-danger btn-sm btn-delete">🗑</button></td>
 </tr>
@@ -248,7 +236,7 @@ salvarDados();
 atualizarKPIs();
 }
 
-/* DELETE + STATUS */
+/* CLICK */
 document.addEventListener("click",(e)=>{
 
     if(e.target.classList.contains("status-ok")){
@@ -260,7 +248,7 @@ document.addEventListener("click",(e)=>{
     }
 
     if(e.target.classList.contains("btn-delete")){
-        if(confirm("Deseja realmente excluir esta linha?")){
+        if(confirm("Excluir linha?")){
             e.target.closest("tr").remove();
             salvarDados();
             atualizarKPIs();
@@ -271,29 +259,19 @@ document.addEventListener("click",(e)=>{
 /* SALVAR */
 function salvarDados(){
     const dados=[];
-
     document.querySelectorAll("#tabela tbody tr").forEach(tr=>{
-        dados.push({
-            data:tr.children[0].innerText,
-            seq:tr.children[1].innerText,
-            tipo:tr.children[2].querySelector("select").value,
-            area:tr.children[3].querySelector("select").value,
-            status:tr.children[4].innerHTML,
-            prazo:tr.children[5].querySelector("input").value,
-            obs:tr.children[6].innerText
-        });
+        dados.push(tr.innerHTML);
     });
-
     localStorage.setItem(STORAGE_KEY,JSON.stringify(dados));
 }
 
 /* CARREGAR */
 function carregarDados(){
     const dados=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-
     dados.forEach(d=>{
-        adicionarLinha();
+        document.querySelector("tbody").insertAdjacentHTML("beforeend",d);
     });
+    atualizarKPIs();
 }
 
 document.addEventListener("input",salvarDados);
