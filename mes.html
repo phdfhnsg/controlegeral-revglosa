@@ -78,11 +78,21 @@ body{
     overflow-x:auto;
 }
 
+/* ✅ CENTRALIZA TUDO NA TABELA */
 th, td{
-    text-align:center;
+    text-align:center !important;
     font-size:12px;
     padding:6px;
-    vertical-align:top;
+    vertical-align:middle;
+}
+
+/* garante centralização de inputs/select/textarea */
+td input,
+td select,
+td textarea{
+    margin:0 auto;
+    display:block;
+    text-align:center;
 }
 
 thead th{
@@ -126,8 +136,9 @@ th:nth-child(7), td:nth-child(7){
     transform:scale(1.05);
 }
 
+/* ❌ removido fundo roxo */
 .area-botoes{
-    background:#721552;
+    background:transparent;
     padding:15px;
     border-radius:10px;
     text-align:center;
@@ -188,7 +199,6 @@ const STORAGE_KEY = "controle_" + MES_ATUAL;
 
 document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
 
-/* KPI (SEM ALTERAÇÃO) */
 function atualizarKPIs(){
 
     const linhas = document.querySelectorAll("tbody tr");
@@ -215,7 +225,6 @@ function atualizarKPIs(){
     document.getElementById("x").innerText = pend;
 }
 
-/* ADD LINHA */
 function adicionarLinha(){
 
 const tr = document.createElement("tr");
@@ -239,7 +248,6 @@ tr.innerHTML = `
 </td>
 
 <td class="status-x">❌</td>
-
 <td class="status-x">❌</td>
 
 <td><input class="form-control form-control-sm text-center"></td>
@@ -259,7 +267,6 @@ salvarDados();
 atualizarKPIs();
 }
 
-/* CLICK STATUS */
 document.addEventListener("click",(e)=>{
 
     if(e.target.classList.contains("status-ok")){
@@ -276,7 +283,6 @@ document.addEventListener("click",(e)=>{
         atualizarKPIs();
     }
 
-    /* 🔴 CONFIRMAÇÃO EXCLUSÃO */
     if(e.target.classList.contains("btn-delete")){
         const confirmar = confirm("Tem certeza que deseja excluir esta linha?");
         if(!confirmar) return;
@@ -288,7 +294,6 @@ document.addEventListener("click",(e)=>{
 
 });
 
-/* BUSCA */
 function filtrarTabela(){
     const termo = document.getElementById("busca").value.toLowerCase();
 
@@ -297,7 +302,6 @@ function filtrarTabela(){
     });
 }
 
-/* SALVAR */
 function salvarDados(){
     const dados = [];
 
@@ -308,7 +312,6 @@ function salvarDados(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
 }
 
-/* CARREGAR */
 function carregarDados(){
     const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 
@@ -319,7 +322,6 @@ function carregarDados(){
     atualizarKPIs();
 }
 
-/* AUTO SAVE */
 document.addEventListener("input", ()=>{
     salvarDados();
 });
