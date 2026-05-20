@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle Geral 2026</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Segoe UI", Arial, sans-serif;
+    background:#ffffff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+/* CONTAINER */
+.container{
+    width:95%;
+    max-width:1100px;
+}
+
+/* BOX */
+.main-box{
+    background:#ececec;
+    padding:35px;
+    border-radius:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+/* HEADER */
+.header{
+    background:#721552;
+    color:#ececec;
+    padding:25px;
+    border-radius:14px;
+    font-size:24px;
+    font-weight:700;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    margin-bottom:20px;
+}
+
+/* SUB */
+.sub{
+    color:#1e1f21;
+    margin-bottom:25px;
+    font-size:14px;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:14px;
+}
+
+/* CARD */
+.card{
+    background:#721552;
+    padding:20px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    font-weight:600;
+    color:#ffffff;
+    user-select:none;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    background:#a678c1;
+}
+
+/* 🔥 LINHA CENTRALIZADA */
+.linha-final{
+    grid-column:1 / -1;
+    display:flex;
+    justify-content:center;
+    gap:14px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="main-box">
+
+<div class="header">
+CONTROLE GERAL 2026 - REVISÃO DE GLOSAS - HNSG
+</div>
+
+<div class="sub">
+Selecione o mês para acessar o sistema
+</div>
+
+<div class="grid">
+
+<div class="card" onclick="abrir('marco')">Março</div>
+<div class="card" onclick="abrir('abril')">Abril</div>
+<div class="card" onclick="abrir('maio')">Maio</div>
+<div class="card" onclick="abrir('junho')">Junho</div>
+<div class="card" onclick="abrir('julho')">Julho</div>
+<div class="card" onclick="abrir('agosto')">Agosto</div>
+
+<!-- 🔥 CENTRALIZADOS -->
+<div class="linha-final">
+    <div class="card" onclick="abrir('setembro')">Setembro</div>
+    <div class="card" onclick="abrir('outubro')">Outubro</div>
+    <div class="card" onclick="abrir('novembro')">Novembro</div>
+    <div class="card" onclick="abrir('dezembro')">Dezembro</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+function abrir(mes){
+    window.location.href = "mes.html?mes=" + mes;
+}
+</script>
+
+</body>
+</html>
