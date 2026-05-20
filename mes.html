@@ -78,7 +78,7 @@ body{
     overflow-x:auto;
 }
 
-/* ✅ CENTRALIZA TUDO NA TABELA */
+/* tabela centralizada */
 th, td{
     text-align:center !important;
     font-size:12px;
@@ -86,21 +86,18 @@ th, td{
     vertical-align:middle;
 }
 
-/* garante centralização de inputs/select/textarea */
-td input,
-td select,
-td textarea{
-    margin:0 auto;
-    display:block;
-    text-align:center;
-}
-
 thead th{
     background:#1e1f21;
-    color:#ececec;
+    color:#fff;
+    cursor:pointer;
 }
 
-/* STATUS */
+thead input, thead select{
+    width:100%;
+    margin-top:4px;
+    font-size:11px;
+}
+
 .status-ok{
     color:#2ecc71;
     cursor:pointer;
@@ -113,34 +110,15 @@ thead th{
     font-size:18px;
 }
 
-/* 📏 PRAZO maior */
-th:nth-child(7), td:nth-child(7){
-    width:120px;
-}
-
-/* 📝 OBSERVAÇÕES fixo com quebra de linha */
 .obs-fixed{
     width:100%;
     height:50px;
     resize:none;
-    overflow:auto;
-    white-space:pre-wrap;
 }
 
-/* botão delete */
-.btn-delete{
-    transition:0.2s;
-}
-
-.btn-delete:hover{
-    transform:scale(1.05);
-}
-
-/* ❌ removido fundo roxo */
 .area-botoes{
     background:transparent;
     padding:15px;
-    border-radius:10px;
     text-align:center;
     margin-top:10px;
 }
@@ -159,29 +137,46 @@ th:nth-child(7), td:nth-child(7){
 <div class="kpi"><p id="x">0</p><small>Pendentes</small></div>
 </div>
 
-<div class="controls">
-<input type="text" id="busca" placeholder="🔍 Buscar..." oninput="filtrarTabela()">
-</div>
-
 <div class="table-box">
 
 <table class="table table-bordered" id="tabela">
+
 <thead>
 <tr>
-<th>DATA</th>
-<th>SEQ</th>
-<th>INTERNADO | EXTERNO</th>
-<th>TIPO</th>
+<th onclick="sortTable(0)">DATA<br><input class="filtro" data-col="0"></th>
+<th onclick="sortTable(1)">SEQ<br><input class="filtro" data-col="1"></th>
+<th onclick="sortTable(2)">INTERNO/EXTERNO<br>
+<select class="filtro" data-col="2">
+<option value="">Todos</option>
+<option>INTERNADO</option>
+<option>EXTERNO</option>
+</select>
+</th>
+<th onclick="sortTable(3)">TIPO<br>
+<select class="filtro" data-col="3">
+<option value="">Todos</option>
+<option>TÉCNICA</option>
+<option>MÉDICA</option>
+</select>
+</th>
 <th>IMPRESSÃO</th>
-<th>STATUS PLANILHA</th>
+<th onclick="sortTable(5)">STATUS PLANILHA<br>
+<select class="filtro" data-col="5">
+<option value="">Todos</option>
+<option>OK</option>
+<option>PENDENTE</option>
+</select>
+</th>
 <th>PRAZO</th>
-<th>REVISÃO PLANILHA</th>
-<th>OBSERVAÇÕES</th>
-<th>FECHADO TASY</th>
+<th>REVISÃO</th>
+<th>OBS</th>
+<th>FECHADO</th>
 <th>AÇÕES</th>
 </tr>
 </thead>
+
 <tbody></tbody>
+
 </table>
 
 </div>
@@ -194,63 +189,87 @@ th:nth-child(7), td:nth-child(7){
 
 const params = new URLSearchParams(window.location.search);
 const MES_ATUAL = params.get("mes") || "geral";
-
 const STORAGE_KEY = "controle_" + MES_ATUAL;
 
 document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
 
-function atualizarKPIs(){
+/* ================= FILTRO ================= */
+document.querySelectorAll(".filtro").forEach(el=>{
+    el.addEventListener("input", filtrar);
+    el.addEventListener("change", filtrar);
+});
 
-    const linhas = document.querySelectorAll("tbody tr");
+function filtrar(){
+    const rows = document.querySelectorAll("tbody tr");
+    const filtros = document.querySelectorAll(".filtro");
 
-    let total = 0;
-    let ok = 0;
-    let pend = 0;
+    rows.forEach(row=>{
+        let show = true;
 
-    linhas.forEach(tr => {
-        const cell = tr.querySelector("td:nth-child(6)");
-        if(!cell) return;
+        filtros.forEach(f=>{
+            const col = f.dataset.col;
+            const val = f.value.toLowerCase();
 
-        total++;
+            if(!val) return;
 
-        if(cell.classList.contains("status-ok")){
-            ok++;
-        } else {
-            pend++;
-        }
+            const cell = row.children[col];
+            if(!cell) return;
+
+            if(!cell.innerText.toLowerCase().includes(val)){
+                show = false;
+            }
+        });
+
+        row.style.display = show ? "" : "none";
     });
-
-    document.getElementById("total").innerText = total;
-    document.getElementById("ok").innerText = ok;
-    document.getElementById("x").innerText = pend;
 }
 
+/* ================= SORT ================= */
+function sortTable(col){
+    const tbody = document.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    const asc = tbody.dataset.sort !== "asc";
+    tbody.dataset.sort = asc ? "asc" : "desc";
+
+    rows.sort((a,b)=>{
+        const A = a.children[col].innerText;
+        const B = b.children[col].innerText;
+
+        return asc ? A.localeCompare(B) : B.localeCompare(A);
+    });
+
+    rows.forEach(r=>tbody.appendChild(r));
+}
+
+/* ================= ADD ROW ================= */
 function adicionarLinha(){
 
 const tr = document.createElement("tr");
 
 tr.innerHTML = `
-<td contenteditable="true"></td>
-<td contenteditable="true"></td>
+<td contenteditable></td>
+<td contenteditable></td>
 
 <td>
-<select class="form-select form-select-sm">
+<select>
 <option>INTERNADO</option>
 <option>EXTERNO</option>
 </select>
 </td>
 
 <td>
-<select class="form-select form-select-sm">
+<select>
 <option>TÉCNICA</option>
 <option>MÉDICA</option>
 </select>
 </td>
 
 <td class="status-x">❌</td>
+
 <td class="status-x">❌</td>
 
-<td><input class="form-control form-control-sm text-center"></td>
+<td><input></td>
 
 <td class="status-x">❌</td>
 
@@ -258,79 +277,52 @@ tr.innerHTML = `
 
 <td class="status-x">❌</td>
 
-<td><button class="btn btn-danger btn-sm btn-delete">🗑</button></td>
+<td><button class="btn btn-danger btn-sm">🗑</button></td>
 `;
 
 document.querySelector("tbody").appendChild(tr);
-
-salvarDados();
-atualizarKPIs();
+salvar();
 }
 
+/* ================= STATUS CLICK ================= */
 document.addEventListener("click",(e)=>{
 
-    if(e.target.classList.contains("status-ok")){
-        e.target.classList.remove("status-ok");
-        e.target.classList.add("status-x");
-        e.target.innerHTML="❌";
-        atualizarKPIs();
-    }
-
-    else if(e.target.classList.contains("status-x")){
+    if(e.target.classList.contains("status-x")){
         e.target.classList.remove("status-x");
         e.target.classList.add("status-ok");
-        e.target.innerHTML="✅";
-        atualizarKPIs();
+        e.target.innerText="✅";
     }
 
-    if(e.target.classList.contains("btn-delete")){
-        const confirmar = confirm("Tem certeza que deseja excluir esta linha?");
-        if(!confirmar) return;
+    else if(e.target.classList.contains("status-ok")){
+        e.target.classList.remove("status-ok");
+        e.target.classList.add("status-x");
+        e.target.innerText="❌";
+    }
 
+    if(e.target.tagName==="BUTTON"){
         e.target.closest("tr").remove();
-        salvarDados();
-        atualizarKPIs();
+        salvar();
     }
-
 });
 
-function filtrarTabela(){
-    const termo = document.getElementById("busca").value.toLowerCase();
-
+/* ================= SAVE ================= */
+function salvar(){
+    const data = [];
     document.querySelectorAll("tbody tr").forEach(tr=>{
-        tr.style.display = tr.innerText.toLowerCase().includes(termo) ? "" : "none";
+        data.push(tr.outerHTML);
     });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-function salvarDados(){
-    const dados = [];
-
-    document.querySelectorAll("tbody tr").forEach(tr=>{
-        dados.push(tr.outerHTML);
-    });
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
-}
-
-function carregarDados(){
-    const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-
-    dados.forEach(html=>{
+/* ================= LOAD ================= */
+function carregar(){
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+    data.forEach(html=>{
         document.querySelector("tbody").insertAdjacentHTML("beforeend", html);
     });
-
-    atualizarKPIs();
 }
 
-document.addEventListener("input", ()=>{
-    salvarDados();
-});
-
-document.addEventListener("change", ()=>{
-    salvarDados();
-});
-
-carregarDados();
+carregar();
 
 </script>
 
