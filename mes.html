@@ -89,6 +89,7 @@ thead th{
     color:#ececec;
 }
 
+/* STATUS */
 .status-ok{
     color:#2ecc71;
     cursor:pointer;
@@ -99,6 +100,15 @@ thead th{
     color:#d3625d;
     cursor:pointer;
     font-size:18px;
+}
+
+/* AJUSTE DE COLUNAS */
+th:nth-child(7), td:nth-child(7){
+    width:80px; /* PRAZO menor */
+}
+
+th:nth-child(9), td:nth-child(9){
+    width:180px; /* OBSERVAÇÕES maior */
 }
 
 .area-botoes{
@@ -135,7 +145,7 @@ thead th{
 <th>DATA</th>
 <th>SEQ</th>
 <th>INTERNADO | EXTERNO</th>
-<th>TÉCNICA | MÉDICA</th>
+<th>TIPO</th>
 <th>IMPRESSÃO</th>
 <th>STATUS PLANILHA</th>
 <th>PRAZO</th>
@@ -163,9 +173,7 @@ const STORAGE_KEY = "controle_" + MES_ATUAL;
 
 document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
 
-/* =========================
-   KPI (ATUALIZA EM TEMPO REAL)
-========================= */
+/* KPI (NÃO MEXIDO - CONTINUA SÓ STATUS PLANILHA) */
 function atualizarKPIs(){
 
     const linhas = document.querySelectorAll("tbody tr");
@@ -192,9 +200,7 @@ function atualizarKPIs(){
     document.getElementById("x").innerText = pend;
 }
 
-/* =========================
-   ADD LINHA
-========================= */
+/* ADD LINHA (IMPRESSÃO AGORA É STATUS TAMBÉM) */
 function adicionarLinha(){
 
 const tr = document.createElement("tr");
@@ -217,7 +223,7 @@ tr.innerHTML = `
 </select>
 </td>
 
-<td contenteditable="true"></td>
+<td class="status-x">❌</td>
 
 <td class="status-x">❌</td>
 
@@ -238,25 +244,21 @@ salvarDados();
 atualizarKPIs();
 }
 
-/* =========================
-   CLICK (AGORA ATUALIZA KPI NA HORA)
-========================= */
+/* CLICK STATUS (SEM ALTERAR KPI LOGIC) */
 document.addEventListener("click",(e)=>{
 
     if(e.target.classList.contains("status-ok")){
         e.target.classList.remove("status-ok");
         e.target.classList.add("status-x");
         e.target.innerHTML="❌";
-
-        atualizarKPIs(); // 🔥 FIX AQUI
+        atualizarKPIs();
     }
 
     else if(e.target.classList.contains("status-x")){
         e.target.classList.remove("status-x");
         e.target.classList.add("status-ok");
         e.target.innerHTML="✅";
-
-        atualizarKPIs(); // 🔥 FIX AQUI
+        atualizarKPIs();
     }
 
     if(e.target.classList.contains("btn-delete")){
