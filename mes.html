@@ -16,7 +16,6 @@ body{
     color:#1e1f21;
 }
 
-/* HEADER */
 .header{
     background:#721552;
     color:#ececec;
@@ -28,7 +27,6 @@ body{
     margin-bottom:10px;
 }
 
-/* VOLTAR */
 .back{
     margin-bottom:10px;
     display:inline-block;
@@ -40,7 +38,6 @@ body{
     font-size:12px;
 }
 
-/* KPIs */
 .kpis{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
@@ -56,7 +53,6 @@ body{
     border:1px solid #a678c1;
 }
 
-/* CONTROLES */
 .controls{
     display:flex;
     gap:10px;
@@ -71,17 +67,12 @@ body{
     font-size:13px;
 }
 
-/* CAIXA ROXA */
 .table-box{
-    background:#721552;
+    background:#ffffff;
     padding:10px;
     border-radius:10px;
+    overflow-x:auto;
     border:1px solid #a678c1;
-}
-
-/* TABELA */
-.table{
-    background:#ffffff;
 }
 
 th, td{
@@ -97,14 +88,6 @@ thead th{
     color:#ececec !important;
 }
 
-/* COLUNAS */
-th:nth-child(1), td:nth-child(1){ width:90px; }
-th:nth-child(2), td:nth-child(2){ width:80px; }
-th:nth-child(3), td:nth-child(3){ width:120px; }
-th:nth-child(4), td:nth-child(4){ width:140px; }
-th:nth-child(5), td:nth-child(5){ width:80px; }
-th:nth-child(6), td:nth-child(6){ width:110px; }
-
 th:nth-child(7), td:nth-child(7){
     width:50%;
     min-width:400px;
@@ -112,22 +95,20 @@ th:nth-child(7), td:nth-child(7){
     text-align:left;
 }
 
-th:nth-child(8), td:nth-child(8){ width:70px; }
-
-/* BOTÃO */
-.btn-linha-box{
-    margin-top:10px;
-    padding:10px;
-    text-align:center;
-}
-
-/* STATUS */
 .status-ok{ color:#a678c1; }
 .status-x{ color:#d3625d; }
 
-.prazo-alerta{
-    color:#d3625d !important;
-    font-weight:bold;
+.area-botoes{
+    background:#721552;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    margin-top:10px;
+}
+
+.btn-add{
+    font-size:16px;
+    padding:8px 20px;
 }
 </style>
 </head>
@@ -157,7 +138,7 @@ th:nth-child(8), td:nth-child(8){ width:70px; }
 <th>DATA</th>
 <th>SEQ</th>
 <th>TIPO</th>
-<th>ÁREA (TÉCNICA / MÉDICA)</th>
+<th>ÁREA</th>
 <th>STATUS</th>
 <th>PRAZO</th>
 <th>OBSERVAÇÕES</th>
@@ -167,10 +148,12 @@ th:nth-child(8), td:nth-child(8){ width:70px; }
 <tbody></tbody>
 </table>
 
-<div class="btn-linha-box">
-<button class="btn btn-primary px-4 py-2" onclick="adicionarLinha()">+ Linha</button>
 </div>
 
+<!-- 🔥 BOTÕES -->
+<div class="area-botoes">
+    <button class="btn btn-primary btn-add" onclick="adicionarLinha()">+ Adicionar Linha</button>
+    <button class="btn btn-danger btn-add" onclick="limparTabela()">🧹 Limpar Tabela</button>
 </div>
 
 <script>
@@ -200,10 +183,10 @@ function exportarCSV(){
         let linha=[
             c[0].innerText,
             c[1].innerText,
-            c[2].querySelector("select")?.value||"",
-            c[3].querySelector("select")?.value||"",
+            c[2].querySelector("select").value,
+            c[3].querySelector("select").value,
             c[4].innerText,
-            c[5].querySelector("input")?.value||"",
+            c[5].querySelector("input").value,
             c[6].innerText
         ];
 
@@ -233,9 +216,8 @@ function atualizarKPIs(){
 
 /* ADD LINHA */
 function adicionarLinha(){
-const tr = document.createElement("tr");
-
-tr.innerHTML = `
+const tr=`
+<tr>
 <td contenteditable="true"></td>
 <td contenteditable="true"></td>
 
@@ -260,15 +242,18 @@ tr.innerHTML = `
 <td contenteditable="true"></td>
 
 <td><button class="btn btn-danger btn-sm btn-delete">🗑</button></td>
+</tr>
 `;
 
-document.querySelector("#tabela tbody").appendChild(tr);
+document.querySelector("tbody").insertAdjacentHTML("beforeend",tr);
 
+salvarDados();
 atualizarKPIs();
 }
 
-/* STATUS + DELETE */
+/* DELETE + STATUS */
 document.addEventListener("click",(e)=>{
+
     if(e.target.classList.contains("status-ok")){
         e.target.className="status-x";
         e.target.innerHTML="❌";
@@ -278,11 +263,55 @@ document.addEventListener("click",(e)=>{
     }
 
     if(e.target.classList.contains("btn-delete")){
-        e.target.closest("tr").remove();
+        if(confirm("Deseja realmente excluir esta linha?")){
+            e.target.closest("tr").remove();
+            salvarDados();
+            atualizarKPIs();
+        }
     }
-
-    atualizarKPIs();
 });
+
+/* LIMPAR */
+function limparTabela(){
+    if(confirm("Tem certeza que deseja apagar TODA a tabela?")){
+        document.querySelector("tbody").innerHTML="";
+        salvarDados();
+        atualizarKPIs();
+    }
+}
+
+/* SALVAR */
+function salvarDados(){
+    const dados=[];
+
+    document.querySelectorAll("#tabela tbody tr").forEach(tr=>{
+        dados.push({
+            data:tr.children[0].innerText,
+            seq:tr.children[1].innerText,
+            tipo:tr.children[2].querySelector("select").value,
+            area:tr.children[3].querySelector("select").value,
+            status:tr.children[4].innerHTML,
+            prazo:tr.children[5].querySelector("input").value,
+            obs:tr.children[6].innerText
+        });
+    });
+
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(dados));
+}
+
+/* CARREGAR */
+function carregarDados(){
+    const dados=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+
+    dados.forEach(d=>{
+        adicionarLinha();
+    });
+}
+
+document.addEventListener("input",salvarDados);
+document.addEventListener("change",salvarDados);
+
+carregarDados();
 
 </script>
 
