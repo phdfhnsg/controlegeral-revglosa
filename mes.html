@@ -82,7 +82,14 @@ thead th{
 /* 🔥 AJUSTES DE TAMANHO */
 th:nth-child(1), td:nth-child(1){ width:110px; } /* DATA */
 th:nth-child(2), td:nth-child(2){ width:90px; }  /* SEQ */
-th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
+th:nth-child(4), td:nth-child(4){ width:120px; } /* TIPO */
+th:nth-child(7), td:nth-child(7){ width:110px; } /* PRAZO */
+th:nth-child(8), td:nth-child(8){ width:90px; }  /* REVISÃO */
+th:nth-child(9), td:nth-child(9){
+    width:400px;
+    text-align:left;
+    white-space:normal;
+} /* OBSERVAÇÕES */
 
 /* STATUS */
 .status-ok{ color:#a678c1; cursor:pointer; }
@@ -120,10 +127,9 @@ th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
 <th>DATA</th>
 <th>SEQ</th>
 <th>INTERNADO | EXTERNO</th>
-<th>TÉCNICA | MÉDICA</th>
+<th>TIPO</th>
 <th>IMPRESSÃO</th>
 <th>STATUS PLANILHA</th>
-<th>PLANILHA</th>
 <th>PRAZO</th>
 <th>REVISÃO PLANILHA</th>
 <th>OBSERVAÇÕES</th>
@@ -144,11 +150,10 @@ th:nth-child(8), td:nth-child(8){ width:110px; } /* PRAZO */
 
 const STORAGE_KEY = "controle";
 
-/* KPI AGORA SÓ STATUS PLANILHA */
+/* KPI */
 function atualizarKPIs(){
-    const linhas = document.querySelectorAll("tbody tr");
-
-    document.getElementById("total").innerText = linhas.length;
+    document.getElementById("total").innerText =
+        document.querySelectorAll("tbody tr").length;
 
     document.getElementById("ok").innerText =
         document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
@@ -181,8 +186,6 @@ const tr=`
 <td contenteditable="true"></td>
 
 <td class="status-x">❌</td>
-
-<td contenteditable="true"></td>
 
 <td><input class="form-control form-control-sm text-center" placeholder="dd/mm/aaaa"></td>
 
