@@ -71,7 +71,6 @@ body{
     border:1px solid #a678c1;
 }
 
-/* TABELA */
 .table-box{
     background:#fff;
     padding:10px;
@@ -90,7 +89,6 @@ thead th{
     color:#ececec;
 }
 
-/* STATUS */
 .status-ok{ color:#a678c1; cursor:pointer; }
 .status-x{ color:#d3625d; cursor:pointer; }
 
@@ -149,9 +147,10 @@ thead th{
 
 <script>
 
-/* 🔥 MÊS DINÂMICO */
 const params = new URLSearchParams(window.location.search);
 const MES_ATUAL = params.get("mes") || "geral";
+
+const STORAGE_KEY = "controle_" + MES_ATUAL;
 
 const nomesMeses = {
     marco: "MARÇO",
@@ -166,28 +165,29 @@ const nomesMeses = {
     dezembro: "DEZEMBRO"
 };
 
-document.getElementById("titulo").innerText = nomesMeses[MES_ATUAL] || MES_ATUAL.toUpperCase();
+document.getElementById("titulo").innerText =
+    nomesMeses[MES_ATUAL] || MES_ATUAL.toUpperCase();
 
-const STORAGE_KEY = "controle_" + MES_ATUAL;
-
-/* KPI (SOMENTE STATUS PLANILHA - COLUNA 6) */
+/* KPI SOMENTE STATUS PLANILHA (COLUNA 6) */
 function atualizarKPIs(){
 
-    const total = document.querySelectorAll("tbody tr td:nth-child(6)").length;
+    const statusCells = document.querySelectorAll("tbody tr td:nth-child(6)");
 
-    const ok = document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
+    document.getElementById("total").innerText = statusCells.length;
 
-    const x = document.querySelectorAll("tbody tr td:nth-child(6).status-x").length;
+    document.getElementById("ok").innerText =
+        document.querySelectorAll("tbody tr td:nth-child(6).status-ok").length;
 
-    document.getElementById("total").innerText = total;
-    document.getElementById("ok").innerText = ok;
-    document.getElementById("x").innerText = x;
+    document.getElementById("x").innerText =
+        document.querySelectorAll("tbody tr td:nth-child(6).status-x").length;
 }
 
-/* ADD */
+/* ADD LINHA */
 function adicionarLinha(){
-const tr=`
-<tr>
+
+const tr = document.createElement("tr");
+
+tr.innerHTML = `
 <td contenteditable="true"></td>
 <td contenteditable="true"></td>
 
@@ -209,7 +209,7 @@ const tr=`
 
 <td class="status-x">❌</td>
 
-<td><input class="form-control form-control-sm text-center" placeholder="dd/mm/aaaa"></td>
+<td><input class="form-control form-control-sm text-center"></td>
 
 <td class="status-x">❌</td>
 
@@ -218,24 +218,26 @@ const tr=`
 <td class="status-x">❌</td>
 
 <td><button class="btn btn-danger btn-sm btn-delete">🗑</button></td>
-</tr>
 `;
 
-document.querySelector("tbody").insertAdjacentHTML("beforeend",tr);
+document.querySelector("tbody").appendChild(tr);
 
 salvarDados();
 atualizarKPIs();
 }
 
-/* CLICK (TODOS OS STATUS FUNCIONAM IGUAL) */
+/* CLICK STATUS */
 document.addEventListener("click",(e)=>{
 
     if(e.target.classList.contains("status-ok")){
-        e.target.className="status-x";
+        e.target.classList.remove("status-ok");
+        e.target.classList.add("status-x");
         e.target.innerHTML="❌";
-    } 
+    }
+
     else if(e.target.classList.contains("status-x")){
-        e.target.className="status-ok";
+        e.target.classList.remove("status-x");
+        e.target.classList.add("status-ok");
         e.target.innerHTML="✅";
     }
 
@@ -250,32 +252,45 @@ document.addEventListener("click",(e)=>{
 
 /* BUSCA */
 function filtrarTabela(){
-    const termo=document.getElementById("busca").value.toLowerCase();
+    const termo = document.getElementById("busca").value.toLowerCase();
+
     document.querySelectorAll("tbody tr").forEach(tr=>{
         tr.style.display = tr.innerText.toLowerCase().includes(termo) ? "" : "none";
     });
 }
 
-/* SALVAR */
+/* SALVAR (AGORA CORRETO COM CLASSES) */
 function salvarDados(){
-    const dados=[];
+    const dados = [];
+
     document.querySelectorAll("tbody tr").forEach(tr=>{
-        dados.push(tr.innerHTML);
+        dados.push(tr.outerHTML);
     });
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(dados));
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
 }
 
 /* CARREGAR */
 function carregarDados(){
-    const dados=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-    dados.forEach(d=>{
-        document.querySelector("tbody").insertAdjacentHTML("beforeend",d);
+    const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    dados.forEach(html=>{
+        document.querySelector("tbody").insertAdjacentHTML("beforeend", html);
     });
+
     atualizarKPIs();
 }
 
-document.addEventListener("input",salvarDados);
-document.addEventListener("change",salvarDados);
+/* INPUT CHANGE */
+document.addEventListener("input", ()=>{
+    salvarDados();
+    atualizarKPIs();
+});
+
+document.addEventListener("change", ()=>{
+    salvarDados();
+    atualizarKPIs();
+});
 
 carregarDados();
 
