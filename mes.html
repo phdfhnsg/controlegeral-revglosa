@@ -11,21 +11,177 @@
 <style>
 
 body{
-    background:#f4f5f7;
+    background: linear-gradient(180deg, #f4f5f7, #ffffff);
     font-family:"Segoe UI", Arial;
     padding:20px;
     color:#1e1f21;
+    line-height:1.4;
 }
 
 .header{
     background:#721552;
     color:#ececec;
-    padding:14px;
+    padding:16px;
     border-radius:10px;
     text-align:center;
     font-size:24px;
     font-weight:700;
-    margin-bottom:10px;
+    margin-bottom:18px;
+}
+
+/* KPIs */
+.kpis{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.kpi{
+    background:#fff;
+    padding:10px 16px;
+    border-radius:10px;
+    width:140px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+.kpi p{
+    font-size:22px;
+    font-weight:700;
+    margin:0;
+}
+
+/* BUSCA */
+.controls{
+    display:flex;
+    justify-content:center;
+    margin-bottom:18px;
+}
+
+.controls input{
+    width:380px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:13px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* MENU */
+.menu{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+}
+
+.menu button{
+    border:none;
+    background:#fff;
+    padding:8px 12px;
+    border-radius:20px;
+    font-size:12px;
+    cursor:pointer;
+    transition:0.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.menu button.active{
+    background:#721552;
+    color:#fff;
+    box-shadow:0 0 0 2px rgba(114,21,82,0.25);
+}
+
+.menu button:hover{
+    background:#721552;
+    color:#fff;
+}
+
+/* 🔥 CARD MODERNO (BOX CINZA ELEVADA) */
+.table-wrapper{
+    background: linear-gradient(145deg, #eeeeee, #dcdcdc);
+    padding:18px;
+    border-radius:18px;
+
+    max-width:1500px;
+    margin:0 auto;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+
+    border:1px solid rgba(0,0,0,0.08);
+
+    transition:0.25s ease;
+}
+
+/* leve “lift” quando passa mouse */
+.table-wrapper:hover{
+    transform: translateY(-2px);
+    box-shadow:
+        0 14px 35px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* TABELA */
+.table-box{
+    background:#fff;
+    padding:10px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+
+    width:100%;
+    overflow-x:auto;
+}
+
+tbody tr:hover{
+    background:#ece6f3;
+    transform:scale(1.005);
+    transition:0.15s;
+}
+
+th, td{
+    text-align:center !important;
+    font-size:12px;
+    vertical-align:middle;
+}
+
+/* COLUNAS */
+th:nth-child(1), td:nth-child(1),
+th:nth-child(2), td:nth-child(2),
+th:nth-child(7), td:nth-child(7){
+    width:120px;
+}
+
+th:nth-child(9), td:nth-child(9){
+    width:320px;
+}
+
+/* INPUTS */
+input,
+select,
+textarea{
+    text-align:center !important;
+}
+
+.obs-fixed{
+    width:100%;
+    height:31px;
+    resize:none;
+}
+
+.status-ok{ color:#00b894; cursor:pointer; }
+.status-x{ color:#d63031; cursor:pointer; }
+
+.area-botoes{
+    text-align:center;
+    padding:15px;
+}
+
+.btn-primary{
+    border-radius:10px;
 }
 
 .back{
@@ -39,113 +195,28 @@ body{
     font-size:12px;
 }
 
-/* ✔ KPIs IGUAIS (AJUSTE AQUI) */
-.kpis{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    margin-bottom:10px;
+/* FOOTER */
+.export-footer{
+    position:fixed;
+    bottom:15px;
+    right:15px;
+    z-index:9999;
 }
 
-.kpi{
-    background:#fff;
-    padding:10px 16px;
-    border-radius:10px;
-    text-align:center;
+.export-footer button{
     border:none;
-    box-shadow:0 2px 8px rgba(0,0,0,0.08);
-
-    /* 🔥 MESMO TAMANHO PARA TODOS */
-    width:140px;
-    min-width:140px;
-}
-
-.kpi p{
-    font-size:22px;
-    font-weight:700;
-    margin:0;
-}
-
-/* CONTROLES */
-.controls{
-    display:flex;
-    justify-content:center;
-    margin-bottom:10px;
-}
-
-.controls input{
-    width:300px;
-    padding:8px;
-    border-radius:8px;
-    border:1px solid #ddd;
+    padding:10px 12px;
+    border-radius:10px;
     font-size:12px;
-}
-
-/* TABLE */
-.table-box{
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
     background:#fff;
-    padding:10px;
-    border-radius:12px;
-    overflow-x:auto;
-}
-
-tbody tr:nth-child(even){
-    background:#f7f7f7;
-}
-
-tbody tr:hover{
-    background:#ece6f3;
-}
-
-th, td{
-    text-align:center !important;
-    font-size:12px;
-    vertical-align:middle;
-}
-
-td input,
-td select,
-td textarea{
-    border-radius:6px !important;
-    font-size:12px;
-    border:1px solid #ddd !important;
-    box-shadow:none !important;
-}
-
-/* STATUS */
-.status-ok{
-    color:#00b894;
-    cursor:pointer;
-    font-size:18px;
-}
-
-.status-x{
-    color:#d63031;
-    cursor:pointer;
-    font-size:18px;
-}
-
-/* OBS */
-.obs-fixed{
-    width:100%;
-    height:31px;
-    resize:none;
-}
-
-/* BOTÃO DELETE */
-.btn-delete{
     transition:0.2s;
 }
 
-.btn-delete:hover{
-    transform:scale(1.05);
-}
-
-.area-botoes{
-    background:transparent;
-    padding:15px;
-    text-align:center;
-    margin-top:10px;
+.export-footer button:hover{
+    background:#721552;
+    color:#fff;
 }
 
 </style>
@@ -167,7 +238,16 @@ td textarea{
 <input type="text" id="busca" placeholder="🔍 Buscar..." oninput="filtrarTabela()">
 </div>
 
-<div class="table-box">
+<div class="menu">
+<button class="active" onclick="filtrarStatus('todos')">📊 Todos</button>
+<button onclick="filtrarStatus('ok')">✅ Concluídos</button>
+<button onclick="filtrarStatus('pendente')">❌ Pendentes</button>
+</div>
+
+<!-- WRAPPER MODERNO -->
+<div class="table-wrapper">
+
+<div class="table-box" id="tabela-area">
 
 <table class="table table-bordered" id="tabela">
 <thead>
@@ -191,50 +271,33 @@ td textarea{
 
 </div>
 
+</div>
+
 <div class="area-botoes">
 <button class="btn btn-primary" onclick="adicionarLinha()">+ Adicionar Linha</button>
 </div>
 
+<div class="export-footer">
+<button onclick="window.print()">🖨 Imprimir</button>
+</div>
+
 <script>
 
+/* ===== MES ===== */
 const params = new URLSearchParams(window.location.search);
-const MES_ATUAL = params.get("mes") || "geral";
-const STORAGE_KEY = "controle_" + MES_ATUAL;
+let MES_ATUAL = params.get("mes") || "geral";
 
-document.getElementById("titulo").innerText = MES_ATUAL.toUpperCase();
+const mesesCorrigidos = {
+    marco:"MARÇO", abril:"ABRIL", maio:"MAIO", junho:"JUNHO",
+    julho:"JULHO", agosto:"AGOSTO", setembro:"SETEMBRO",
+    outubro:"OUTUBRO", novembro:"NOVEMBRO", dezembro:"DEZEMBRO",
+    janeiro:"JANEIRO", fevereiro:"FEVEREIRO"
+};
 
-document.addEventListener("click",(e)=>{
+MES_ATUAL = mesesCorrigidos[MES_ATUAL.toLowerCase()] || MES_ATUAL.toUpperCase();
 
-    const btn = e.target.closest(".btn-delete");
-
-    if(btn){
-        const tr = btn.closest("tr");
-        if(!tr) return;
-
-        const confirmar = confirm("Tem certeza que deseja excluir esta linha?");
-        if(!confirmar) return;
-
-        tr.remove();
-        salvarDados();
-        atualizarKPIs();
-        return;
-    }
-
-    if(e.target.classList.contains("status-ok")){
-        e.target.classList.remove("status-ok");
-        e.target.classList.add("status-x");
-        e.target.innerHTML="❌";
-        atualizarKPIs();
-    }
-
-    else if(e.target.classList.contains("status-x")){
-        e.target.classList.remove("status-x");
-        e.target.classList.add("status-ok");
-        e.target.innerHTML="✅";
-        atualizarKPIs();
-    }
-
-});
+document.getElementById("titulo").innerText =
+    `CONTROLE GERAL - ${MES_ATUAL}`;
 
 function adicionarLinha(){
 
@@ -270,7 +333,7 @@ tr.innerHTML = `
 <td class="status-x">❌</td>
 
 <td>
-<button class="btn btn-danger btn-sm btn-delete" type="button">🗑</button>
+<button class="btn btn-danger btn-sm">🗑</button>
 </td>
 `;
 
@@ -280,9 +343,64 @@ salvarDados();
 atualizarKPIs();
 }
 
+document.addEventListener("click", (e)=>{
+
+    if(e.target.classList.contains("status-ok")){
+        e.target.classList.remove("status-ok");
+        e.target.classList.add("status-x");
+        e.target.innerHTML = "❌";
+        atualizarKPIs();
+        salvarDados();
+    }
+
+    else if(e.target.classList.contains("status-x")){
+        e.target.classList.remove("status-x");
+        e.target.classList.add("status-ok");
+        e.target.innerHTML = "✅";
+        atualizarKPIs();
+        salvarDados();
+    }
+});
+
+document.addEventListener("click", (e)=>{
+
+    const btn = e.target.closest(".btn-danger");
+    if(!btn) return;
+
+    const tr = btn.closest("tr");
+    if(!tr) return;
+
+    if(!confirm("Tem certeza que deseja excluir esta linha?")) return;
+
+    tr.remove();
+    salvarDados();
+    atualizarKPIs();
+});
+
+function filtrarStatus(tipo){
+
+    document.querySelectorAll(".menu button")
+    .forEach(btn => btn.classList.remove("active"));
+
+    const ativoBtn = document.querySelector(`.menu button[onclick="filtrarStatus('${tipo}')"]`);
+    if(ativoBtn) ativoBtn.classList.add("active");
+
+    document.querySelectorAll("tbody tr").forEach(tr=>{
+
+        const statusCell = tr.querySelector("td:nth-child(6)");
+        if(!statusCell) return;
+
+        const isOk = statusCell.classList.contains("status-ok");
+        const isPend = statusCell.classList.contains("status-x");
+
+        if(tipo === "todos") tr.style.display = "";
+        if(tipo === "ok") tr.style.display = isOk ? "" : "none";
+        if(tipo === "pendente") tr.style.display = isPend ? "" : "none";
+    });
+}
+
 function filtrarTabela(){
     const termo = document.getElementById("busca").value.toLowerCase();
-
     document.querySelectorAll("tbody tr").forEach(tr=>{
         tr.style.display = tr.innerText.toLowerCase().includes(termo) ? "" : "none";
     });
@@ -293,49 +411,29 @@ function salvarDados(){
     document.querySelectorAll("tbody tr").forEach(tr=>{
         dados.push(tr.outerHTML);
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
-}
-
-function carregarDados(){
-    const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-
-    dados.forEach(html=>{
-        document.querySelector("tbody").insertAdjacentHTML("beforeend", html);
-    });
-
-    atualizarKPIs();
+    localStorage.setItem("controle_" + MES_ATUAL, JSON.stringify(dados));
 }
 
 function atualizarKPIs(){
-
-    const linhas = document.querySelectorAll("tbody tr");
 
     let total = 0;
     let ok = 0;
     let pend = 0;
 
-    linhas.forEach(tr=>{
+    document.querySelectorAll("tbody tr").forEach(tr=>{
         const cell = tr.querySelector("td:nth-child(6)");
         if(!cell) return;
 
         total++;
 
-        if(cell.classList.contains("status-ok")){
-            ok++;
-        } else {
-            pend++;
-        }
+        if(cell.classList.contains("status-ok")) ok++;
+        else pend++;
     });
 
     document.getElementById("total").innerText = total;
     document.getElementById("ok").innerText = ok;
     document.getElementById("x").innerText = pend;
 }
-
-document.addEventListener("input", salvarDados);
-document.addEventListener("change", salvarDados);
-
-carregarDados();
 
 </script>
 
