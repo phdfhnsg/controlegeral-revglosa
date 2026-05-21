@@ -10,29 +10,35 @@
 
 <style>
 
-/* 🌈 FUNDO */
+/* 🌈 FUNDO (AJUSTADO 100%) */
+html, body{
+    height:100%;
+}
+
 body{
+    min-height:100vh;
     background:
-    radial-gradient(circle at 20% 20%, rgba(142,28,106,0.08), transparent 40%),
-    radial-gradient(circle at 80% 0%, rgba(114,21,82,0.08), transparent 40%),
-    linear-gradient(135deg, #f6f7fb, #ffffff);
+    radial-gradient(circle at top, rgba(114,21,82,0.08), transparent 50%),
+    linear-gradient(180deg, #f8f9fc 0%, #eef1f7 100%);
     
     font-family:"Segoe UI", Arial;
     padding:20px;
     color:#1e1f21;
 }
 
-/* HEADER */
+/* 🔵 HEADER AJUSTADO (MENOR) */
 .header{
-    background: linear-gradient(135deg, #721552, #8e1c6a);
+    background: linear-gradient(135deg, #0d6efd, #3a8bff);
     color:#fff;
-    padding:22px;
+    padding:20px;
     border-radius:16px;
     text-align:center;
-    font-size:26px;
+    font-size:24px;
     font-weight:700;
-    margin-bottom:24px;
-    box-shadow:0 10px 30px rgba(114,21,82,0.25);
+    margin:0 auto 24px auto;
+    max-width:900px;
+    box-shadow:0 10px 30px rgba(13,110,253,0.35);
+    letter-spacing:1px;
 }
 
 /* KPIs */
@@ -86,10 +92,17 @@ body{
 /* MENU */
 .menu{
     display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    margin-bottom:26px;
+}
+
+.menu-linha{
+    display:flex;
     justify-content:center;
     gap:10px;
     flex-wrap:wrap;
-    margin-bottom:26px;
 }
 
 .menu button{
@@ -126,6 +139,28 @@ body{
     vertical-align:middle !important;
 }
 
+/* LARGURAS */
+.table th:nth-child(1),
+.table td:nth-child(1){ width:90px; }
+
+.table th:nth-child(2),
+.table td:nth-child(2){ width:90px; }
+
+.table th:nth-child(9),
+.table td:nth-child(9){ width:320px; }
+
+/* CAMPOS */
+.table td:nth-child(1) input,
+.table td:nth-child(2) input{ width:70px; }
+
+.table td:nth-child(9) textarea{ width:100%; }
+
+/* 🔴 PRAZO ALERTA */
+.prazo-alerta{
+    color:#d63031 !important;
+    font-weight:600;
+}
+
 /* ===== ESTILO EXCEL ===== */
 
 .table{
@@ -133,7 +168,6 @@ body{
     margin-bottom:0;
 }
 
-/* cabeçalho estilo planilha */
 .table thead{
     background:#f3f3f3;
 }
@@ -145,23 +179,19 @@ body{
     border:1px solid #dcdcdc !important;
 }
 
-/* células com grade completa */
 .table tbody td{
     border:1px solid #e0e0e0 !important;
     padding:8px !important;
 }
 
-/* linhas alternadas (zebra leve estilo Excel) */
 .table tbody tr:nth-child(even){
     background:#fafafa;
 }
 
-/* hover discreto */
 .table tbody tr:hover{
     background:#f1e7f1;
 }
 
-/* inputs */
 input, select, textarea{
     text-align:center !important;
     border-radius:6px !important;
@@ -177,13 +207,14 @@ input, select, textarea{
 .status-ok{ color:#00b894; cursor:pointer; }
 .status-x{ color:#d63031; cursor:pointer; }
 
+/* BOTÃO AZUL */
 .btn-primary{
-    background: linear-gradient(135deg, #721552, #8e1c6a);
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
     border:none;
     border-radius:10px;
     padding:10px 18px;
     font-weight:600;
-    box-shadow:0 6px 15px rgba(114,21,82,0.3);
+    box-shadow:0 6px 15px rgba(13,110,253,0.3);
 }
 
 .btn-danger{
@@ -244,20 +275,29 @@ input, select, textarea{
 </div>
 
 <div class="menu">
-<button class="active" onclick="filtrarStatus('todos', this)">📊 Todos</button>
-<button onclick="filtrarStatus('ok', this)">✅ Concluídos</button>
-<button onclick="filtrarStatus('pendente', this)">❌ Pendentes</button>
+    <div class="menu-linha">
+        <button class="active" onclick="filtrarStatus('todos', this)">📊 Todos</button>
+        <button onclick="filtrarStatus('ok', this)">✅ Concluídos</button>
+        <button onclick="filtrarStatus('pendente', this)">❌ Pendentes</button>
+    </div>
+
+    <div class="menu-linha">
+        <button onclick="filtrarStatus('internado', this)">🏥 Internado</button>
+        <button onclick="filtrarStatus('externo', this)">🚶 Externo</button>
+        <button onclick="filtrarStatus('rec', this)">🔁 Rec do Rec</button>
+        <button onclick="filtrarStatus('tecnica', this)">⚙️ Técnica</button>
+        <button onclick="filtrarStatus('medica', this)">🩺 Médica</button>
+    </div>
 </div>
 
 <div class="table-wrapper">
-
 <table class="table" id="tabela">
 <thead>
 <tr>
-<th>DATA</th>
-<th>SEQUÊNCIA</th>
-<th>INTERNADO | EXTERNO</th>
-<th>TIPO</th>
+<th>DATA DA PLANILHA</th>
+<th>SEQUÊNCIA (GRG)</th>
+<th>INTERNADO | EXTERNO | REC</th>
+<th>TÉCNICA | MÉDICA</th>
 <th>IMPRESSÃO</th>
 <th>STATUS PLANILHA</th>
 <th>PRAZO</th>
@@ -269,7 +309,6 @@ input, select, textarea{
 </thead>
 <tbody></tbody>
 </table>
-
 </div>
 
 <div class="area-botoes">
@@ -281,8 +320,6 @@ input, select, textarea{
 </div>
 
 <script>
-
-/* ===== (SEU JS INTACTO — NÃO ALTEREI NADA) ===== */
 
 let filtroAtual = "todos";
 
@@ -305,13 +342,52 @@ function aplicarFiltros(){
         const texto = linha.innerText.toLowerCase();
         const status = linha.children[5].innerText;
 
+        const selectTipo = linha.children[2].querySelector("select");
+        const selectClasse = linha.children[3].querySelector("select");
+
+        const tipo = selectTipo ? selectTipo.value : "";
+        const classe = selectClasse ? selectClasse.value : "";
+
         let mostrar = true;
 
         if(!texto.includes(busca)) mostrar = false;
+
         if(filtroAtual === "ok" && status !== "✅") mostrar = false;
         if(filtroAtual === "pendente" && status !== "❌") mostrar = false;
 
+        if(filtroAtual === "internado" && tipo !== "INTERNADO") mostrar = false;
+        if(filtroAtual === "externo" && tipo !== "EXTERNO") mostrar = false;
+        if(filtroAtual === "rec" && tipo !== "REC DO REC") mostrar = false;
+
+        if(filtroAtual === "tecnica" && classe !== "TÉCNICA") mostrar = false;
+        if(filtroAtual === "medica" && classe !== "MÉDICA") mostrar = false;
+
         linha.style.display = mostrar ? "" : "none";
+    });
+
+    verificarPrazos();
+}
+
+function verificarPrazos(){
+    const linhas = document.querySelectorAll("#tabela tbody tr");
+
+    linhas.forEach(linha => {
+        const inputPrazo = linha.children[6].querySelector("input");
+        if(!inputPrazo) return;
+
+        const valor = inputPrazo.value;
+        const dataPrazo = new Date(valor);
+        const hoje = new Date();
+
+        if(!isNaN(dataPrazo)){
+            const diff = (dataPrazo - hoje) / (1000 * 60 * 60 * 24);
+
+            if(diff <= 3){
+                inputPrazo.classList.add("prazo-alerta");
+            }else{
+                inputPrazo.classList.remove("prazo-alerta");
+            }
+        }
     });
 }
 
@@ -344,6 +420,7 @@ function adicionarLinha(){
                 <option value="" selected></option>
                 <option>INTERNADO</option>
                 <option>EXTERNO</option>
+                <option>REC DO REC</option>
             </select>
         </td>
 
@@ -357,7 +434,7 @@ function adicionarLinha(){
 
         <td class="status-x" onclick="toggleStatus(this)">❌</td>
         <td class="status-x" onclick="toggleStatus(this)">❌</td>
-        <td><input type="text"></td>
+        <td><input type="date" oninput="verificarPrazos()"></td>
         <td class="status-x" onclick="toggleStatus(this)">❌</td>
         <td><textarea class="obs-fixed"></textarea></td>
         <td class="status-x" onclick="toggleStatus(this)">❌</td>
@@ -370,8 +447,10 @@ function adicionarLinha(){
 }
 
 function removerLinha(btn){
-    btn.closest("tr").remove();
-    atualizarKPIs();
+    if(confirm("Tem certeza que deseja excluir esta linha?")){
+        btn.closest("tr").remove();
+        atualizarKPIs();
+    }
 }
 
 function toggleStatus(el){
