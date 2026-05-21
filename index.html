@@ -7,14 +7,25 @@
 <title>Controle Geral 2026</title>
 
 <style>
+
+/* 🏥 FUNDO HOSPITALAR ESCURO (ALTERADO SOMENTE O BODY) */
 body{
     margin:0;
     font-family:"Segoe UI", Arial, sans-serif;
-    background:#ffffff;
+    min-height:100vh;
+
+    background:
+    /* luzes hospitalares sutis */
+    radial-gradient(circle at 15% 20%, rgba(13,110,253,0.25), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(32,201,151,0.18), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(13,110,253,0.15), transparent 50%),
+
+    /* base escura moderna */
+    linear-gradient(180deg, #0b1220 0%, #0f1a2b 50%, #0a1020 100%);
+
     display:flex;
     justify-content:center;
     align-items:center;
-    min-height:100vh;
 }
 
 /* CONTAINER */
@@ -23,30 +34,32 @@ body{
     max-width:1100px;
 }
 
-/* BOX */
+/* 💎 BOX ESTILO GLASS */
 .main-box{
-    background:#ececec;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(12px);
     padding:35px;
-    border-radius:18px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.12);
     text-align:center;
 }
 
-/* HEADER */
+/* 🔵 HEADER PREMIUM */
 .header{
-    background:#721552;
-    color:#ececec;
+    background: linear-gradient(135deg, #0d6efd, #3a8bff);
+    color:#fff;
     padding:25px;
-    border-radius:14px;
+    border-radius:16px;
     font-size:24px;
     font-weight:700;
-    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    box-shadow:0 10px 30px rgba(13,110,253,0.4);
     margin-bottom:20px;
+    letter-spacing:1px;
 }
 
 /* SUB */
 .sub{
-    color:#1e1f21;
+    color:#555;
     margin-bottom:25px;
     font-size:14px;
 }
@@ -54,35 +67,46 @@ body{
 /* GRID */
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    grid-template-columns:repeat(4, 1fr);
     gap:14px;
 }
 
-/* CARD */
+/* 🚀 CARD */
 .card{
-    background:#721552;
-    padding:20px;
-    border-radius:12px;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    padding:18px;
+    border-radius:14px;
     cursor:pointer;
-    transition:0.2s;
-    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    transition:0.25s;
+    box-shadow:0 6px 18px rgba(13,110,253,0.3);
     font-weight:600;
-    color:#ffffff;
+    color:#fff;
     user-select:none;
+    position:relative;
+    overflow:hidden;
+}
+
+/* brilho */
+.card::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition:0.5s;
+}
+
+.card:hover::after{
+    left:100%;
 }
 
 .card:hover{
-    transform:translateY(-3px);
-    background:#a678c1;
+    transform:translateY(-5px) scale(1.02);
+    box-shadow:0 12px 30px rgba(13,110,253,0.45);
 }
 
-/* 🔥 LINHA CENTRALIZADA */
-.linha-final{
-    grid-column:1 / -1;
-    display:flex;
-    justify-content:center;
-    gap:14px;
-}
 </style>
 
 </head>
@@ -103,20 +127,18 @@ Selecione o mês para acessar o sistema
 
 <div class="grid">
 
+<div class="card" onclick="abrir('janeiro')">Janeiro</div>
+<div class="card" onclick="abrir('fevereiro')">Fevereiro</div>
 <div class="card" onclick="abrir('marco')">Março</div>
 <div class="card" onclick="abrir('abril')">Abril</div>
 <div class="card" onclick="abrir('maio')">Maio</div>
 <div class="card" onclick="abrir('junho')">Junho</div>
 <div class="card" onclick="abrir('julho')">Julho</div>
 <div class="card" onclick="abrir('agosto')">Agosto</div>
-
-<!-- 🔥 CENTRALIZADOS -->
-<div class="linha-final">
-    <div class="card" onclick="abrir('setembro')">Setembro</div>
-    <div class="card" onclick="abrir('outubro')">Outubro</div>
-    <div class="card" onclick="abrir('novembro')">Novembro</div>
-    <div class="card" onclick="abrir('dezembro')">Dezembro</div>
-</div>
+<div class="card" onclick="abrir('setembro')">Setembro</div>
+<div class="card" onclick="abrir('outubro')">Outubro</div>
+<div class="card" onclick="abrir('novembro')">Novembro</div>
+<div class="card" onclick="abrir('dezembro')">Dezembro</div>
 
 </div>
 
