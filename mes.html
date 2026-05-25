@@ -236,10 +236,25 @@ input, select, textarea{
 }
 
 .btn-danger{
-    background:#fff;
-    color:#d63031;
-    border:1px solid #f1b5b5;
-    border-radius:8px;
+    background: #dc3545 !important;
+    color: #fff !important;
+
+    border: none !important;
+    border-radius: 8px;
+
+    padding: 6px 10px;
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.btn-danger:hover{
+    background: #bb2d3b !important;
+    transform: translateY(-1px);
 }
 
 /* BOTÃO SALVAR TOPO DIREITO */
@@ -289,6 +304,69 @@ input, select, textarea{
     padding:6px 10px;
     border-radius:8px;
     font-size:12px;
+}
+
+.linha-data td{
+    text-align: center !important;
+    vertical-align: middle !important;
+
+    background: #1f2937 !important;
+    color: #e5e7eb !important;
+
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+
+    padding: 10px !important;
+
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+.linha-data td{
+    padding:12px !important;
+    border-top:2px solid #0b5ed7 !important;
+    border-bottom:2px solid #0b5ed7 !important;
+}
+
+.linha-data td{
+    padding:10px !important;
+}
+
+.table td,
+.table th{
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.data-title{
+    text-align: center !important;
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.data-actions{
+    text-align: center;
+    white-space: nowrap;
+}
+
+.data-actions button{
+    margin: 0 4px;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block;
+}
+
+.data-actions{
+    text-align: center;
+    white-space: nowrap;
+}
+
+.data-actions button{
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin: 0 4px;
 }
 
 </style>
@@ -356,10 +434,135 @@ input, select, textarea{
 </div>
 
 <div class="area-botoes">
-<button class="btn btn-primary" onclick="adicionarLinha()">+ ADICIONAR LINHA</button>
+    <button class="btn btn-secondary" onclick="adicionarDivisoriaData()">+ ADICIONAR DATA</button>
+</div>
 </div>
 
 <script>
+
+function removerDataCompleta(btn){
+
+    if(!confirm("Tem certeza que deseja excluir esta data e todas as suas linhas?")) return;
+
+    const linhaData = btn.closest("tr");
+
+    let atual = linhaData.nextElementSibling;
+
+    // remove a linha da data
+    linhaData.remove();
+
+    // remove todas as linhas até próxima data
+    while(atual && !atual.classList.contains("linha-data")){
+        const prox = atual.nextElementSibling;
+        atual.remove();
+        atual = prox;
+    }
+
+    atualizarKPIs();
+}
+
+function adicionarLinhaPorData(dataSelecionada){
+
+    const tabela = document.querySelector("#tabela tbody");
+
+    const linha = document.createElement("tr");
+
+    linha.innerHTML = `
+        <td><input type="text" value="${dataSelecionada}"></td>
+        <td><input type="text"></td>
+
+        <td>
+            <select>
+                <option value="" selected></option>
+                <option>INTERNADO</option>
+                <option>EXTERNO</option>
+                <option>REC DO REC</option>
+            </select>
+        </td>
+
+        <td>
+            <select>
+                <option value="" selected></option>
+                <option>MÉDICA</option>
+                <option>TÉCNICA</option>
+            </select>
+        </td>
+
+        <td class="status-x" onclick="toggleStatus(this)">❌</td>
+        <td class="status-x" onclick="toggleStatus(this)">❌</td>
+        <td><input type="date" oninput="verificarPrazos()"></td>
+        <td class="status-x" onclick="toggleStatus(this)">❌</td>
+        <td><textarea class="obs-fixed"></textarea></td>
+        <td class="status-x" onclick="toggleStatus(this)">❌</td>
+        <td><button class="btn btn-danger btn-sm" onclick="removerLinha(this)">Excluir</button></td>
+    `;
+
+    // 🔥 AQUI ESTÁ A MÁGICA: inserir na posição correta
+
+    const linhas = [...tabela.querySelectorAll("tr")];
+
+    let ultimaDataIndex = -1;
+
+    for(let i = 0; i < linhas.length; i++){
+        if(linhas[i].classList.contains("linha-data") &&
+           linhas[i].getAttribute("data-date") === dataSelecionada){
+            ultimaDataIndex = i;
+        }
+    }
+
+    if(ultimaDataIndex === -1){
+        tabela.appendChild(linha);
+        atualizarKPIs();
+        return;
+    }
+
+    // encontra próxima data (ou final da tabela)
+    let insertAfter = ultimaDataIndex;
+
+    for(let i = ultimaDataIndex + 1; i < linhas.length; i++){
+        if(linhas[i].classList.contains("linha-data")){
+            break;
+        }
+        insertAfter = i;
+    }
+
+    linhas[insertAfter].after(linha);
+
+    atualizarKPIs();
+}
+
+function removerLinhaData(btn){
+    if(confirm("Remover essa data?")){
+        btn.closest("tr").remove();
+    }
+}
+
+function adicionarDivisoriaData(){
+    const data = prompt("Digite a data (ex: 25/05/2026)");
+
+    if(!data) return;
+
+    const tabela = document.querySelector("#tabela tbody");
+
+    const linha = document.createElement("tr");
+    linha.classList.add("linha-data");
+    linha.setAttribute("data-date", data);
+
+    linha.innerHTML = `
+    <td colspan="9" class="data-title">📅 ${data}</td>
+    <td colspan="2" class="data-actions">
+        <button class="btn btn-success btn-sm" onclick="adicionarLinhaPorData('${data}')">
+            + Linha
+        </button>
+
+        <button class="btn btn-danger btn-sm" onclick="removerDataCompleta(this)">
+            Excluir
+        </button>
+    </td>
+`;
+
+    tabela.appendChild(linha);
+}
 
 let filtroAtual = "todos";
 let filtrosAtivos = new Set();
@@ -401,12 +604,26 @@ function filtrarTabela(){
 }
 
 function aplicarFiltros(){
+
     const busca = document.getElementById("busca").value.toLowerCase();
     const linhas = document.querySelectorAll("#tabela tbody tr");
 
     linhas.forEach(linha => {
+
+        // 🔹 IGNORA LINHAS DE DATA
+        if(linha.classList.contains("linha-data")){
+            linha.style.display = "";
+            return;
+        }
+
+        // 🔹 MOSTRA TUDO SE FOR "TODOS"
+        if(filtroAtual === "todos" && filtrosAtivos.size === 0){
+            linha.style.display = "";
+            return;
+        }
+
         const texto = linha.innerText.toLowerCase();
-        const status = linha.children[5].innerText;
+        const status = linha.children[5].innerText.trim();
 
         const selectTipo = linha.children[2].querySelector("select");
         const selectClasse = linha.children[3].querySelector("select");
@@ -416,36 +633,40 @@ function aplicarFiltros(){
 
         let mostrar = true;
 
+        // 🔍 BUSCA
         if(!texto.includes(busca)) mostrar = false;
 
-if(filtrosAtivos.size === 0){
+        // 🎯 FILTRO SIMPLES (1 botão)
+        if(filtrosAtivos.size === 0){
 
-    if(filtroAtual === "ok" && status !== "✅") mostrar = false;
-    if(filtroAtual === "pendente" && status !== "❌") mostrar = false;
+            if(filtroAtual === "ok" && status !== "✅") mostrar = false;
+            if(filtroAtual === "pendente" && status !== "❌") mostrar = false;
 
-    if(filtroAtual === "internado" && tipo !== "INTERNADO") mostrar = false;
-    if(filtroAtual === "externo" && tipo !== "EXTERNO") mostrar = false;
-    if(filtroAtual === "rec" && tipo !== "REC DO REC") mostrar = false;
+            if(filtroAtual === "internado" && tipo !== "INTERNADO") mostrar = false;
+            if(filtroAtual === "externo" && tipo !== "EXTERNO") mostrar = false;
+            if(filtroAtual === "rec" && tipo !== "REC DO REC") mostrar = false;
 
-    if(filtroAtual === "tecnica" && classe !== "TÉCNICA") mostrar = false;
-    if(filtroAtual === "medica" && classe !== "MÉDICA") mostrar = false;
+            if(filtroAtual === "tecnica" && classe !== "TÉCNICA") mostrar = false;
+            if(filtroAtual === "medica" && classe !== "MÉDICA") mostrar = false;
 
-} else {
+        } 
+        // 🔥 MULTI-FILTRO (vários botões ativos)
+        else {
 
-    let passou = false;
+            let passou = false;
 
-    if(filtrosAtivos.has("ok") && status === "✅") passou = true;
-    if(filtrosAtivos.has("pendente") && status === "❌") passou = true;
+            if(filtrosAtivos.has("ok") && status === "✅") passou = true;
+            if(filtrosAtivos.has("pendente") && status === "❌") passou = true;
 
-    if(filtrosAtivos.has("internado") && tipo === "INTERNADO") passou = true;
-    if(filtrosAtivos.has("externo") && tipo === "EXTERNO") passou = true;
-    if(filtrosAtivos.has("rec") && tipo === "REC DO REC") passou = true;
+            if(filtrosAtivos.has("internado") && tipo === "INTERNADO") passou = true;
+            if(filtrosAtivos.has("externo") && tipo === "EXTERNO") passou = true;
+            if(filtrosAtivos.has("rec") && tipo === "REC DO REC") passou = true;
 
-    if(filtrosAtivos.has("tecnica") && classe === "TÉCNICA") passou = true;
-    if(filtrosAtivos.has("medica") && classe === "MÉDICA") passou = true;
+            if(filtrosAtivos.has("tecnica") && classe === "TÉCNICA") passou = true;
+            if(filtrosAtivos.has("medica") && classe === "MÉDICA") passou = true;
 
-    if(!passou) mostrar = false;
-}
+            if(!passou) mostrar = false;
+        }
 
         linha.style.display = mostrar ? "" : "none";
     });
@@ -457,6 +678,9 @@ function verificarPrazos(){
     const linhas = document.querySelectorAll("#tabela tbody tr");
 
     linhas.forEach(linha => {
+
+        if(linha.classList.contains("linha-data")) return;
+
         const inputPrazo = linha.children[6].querySelector("input");
         if(!inputPrazo) return;
 
@@ -539,12 +763,19 @@ function toggleStatus(el){
 function atualizarKPIs(){
     const linhas = document.querySelectorAll("#tabela tbody tr");
 
-    let total = linhas.length;
+    let total = 0;
     let ok = 0;
     let pendente = 0;
 
     linhas.forEach(linha => {
+
+        // 👇 AQUI (primeira linha dentro do forEach)
+        if(linha.classList.contains("linha-data")) return;
+
+        total++; // conta só linhas válidas
+
         const status = linha.children[5].innerText;
+
         if(status === "✅") ok++;
         else pendente++;
     });
@@ -579,7 +810,21 @@ function getDocId(){
 async function salvar(){
     const linhas = document.querySelectorAll("#tabela tbody tr");
 
-    const dados = [...linhas].map(l => ({
+    const dados = [...linhas].map(l => {
+
+    // 👇 SE FOR LINHA DE DATA
+    if(l.classList.contains("linha-data")){
+    return {
+        tipo: "data",
+        valor: l.querySelector("td").innerText
+            .replace("📅", "")
+            .trim()
+    };
+}
+
+    // 👇 LINHA NORMAL
+    return {
+        tipo: "normal",
         c1:l.children[0].querySelector("input")?.value||"",
         c2:l.children[1].querySelector("input")?.value||"",
         c3:l.children[2].querySelector("select")?.value||"",
@@ -590,7 +835,9 @@ async function salvar(){
         c8:l.children[7].innerText,
         c9:l.children[8].querySelector("textarea")?.value||"",
         c10:l.children[9].innerText
-    }));
+    };
+
+});
 
     await setDoc(doc(db,"planilhas", getDocId()), { dados });
 
@@ -608,22 +855,53 @@ async function carregar(){
     if(!snap.exists()) return;
 
     snap.data().dados.forEach(d=>{
-        adicionarLinha();
 
-        const rows = document.querySelectorAll("#tabela tbody tr");
-        const r = rows[rows.length-1];
+    // 👇 SE FOR LINHA DE DATA
+    if(d.tipo === "data"){
+    const tabela = document.querySelector("#tabela tbody");
 
-        r.children[0].querySelector("input").value = d.c1;
-        r.children[1].querySelector("input").value = d.c2;
-        r.children[2].querySelector("select").value = d.c3;
-        r.children[3].querySelector("select").value = d.c4;
-        r.children[4].innerText = d.c5;
-        r.children[5].innerText = d.c6;
-        r.children[6].querySelector("input").value = d.c7;
-        r.children[7].innerText = d.c8;
-        r.children[8].querySelector("textarea").value = d.c9;
-        r.children[9].innerText = d.c10;
-    });
+    const linha = document.createElement("tr");
+    linha.classList.add("linha-data");
+
+    linha.setAttribute("data-date", d.valor);
+
+    linha.innerHTML = `
+        <td colspan="9" class="data-title">📅 ${d.valor}</td>
+
+        <td colspan="2" class="data-actions">
+            <button class="btn btn-success btn-sm"
+                onclick="adicionarLinhaPorData('${d.valor}')">
+                + Linha
+            </button>
+
+            <button class="btn btn-danger btn-sm"
+                onclick="removerDataCompleta(this)">
+                Excluir
+            </button>
+        </td>
+    `;
+
+    tabela.appendChild(linha);
+    return;
+}
+
+    // 👇 LINHA NORMAL
+    adicionarLinha();
+
+    const rows = document.querySelectorAll("#tabela tbody tr");
+    const r = rows[rows.length-1];
+
+    r.children[0].querySelector("input").value = d.c1;
+    r.children[1].querySelector("input").value = d.c2;
+    r.children[2].querySelector("select").value = d.c3;
+    r.children[3].querySelector("select").value = d.c4;
+    r.children[4].innerText = d.c5;
+    r.children[5].innerText = d.c6;
+    r.children[6].querySelector("input").value = d.c7;
+    r.children[7].innerText = d.c8;
+    r.children[8].querySelector("textarea").value = d.c9;
+    r.children[9].innerText = d.c10;
+});
 
     atualizarKPIs();
 }
