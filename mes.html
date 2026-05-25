@@ -10,9 +10,15 @@
 
 <style>
 
+.area-botoes{
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
 /* 🏥 FUNDO HOSPITALAR ESCURO (EXTRAÍDO) */
 html, body{
-    height:100%;
+    min-height:100%;
 }
 
 body{
@@ -115,18 +121,28 @@ body{
 
 .menu button{
     border:none;
-    background:#fff;
+    background: rgba(255,255,255,0.06);
+    color:#cbd5e1;
     padding:8px 16px;
-    border-radius:30px;
+    border-radius:12px;
     font-size:12px;
     cursor:pointer;
-    border:1px solid #e4e6ea;
-    transition:0.2s;
+    border:1px solid rgba(255,255,255,0.08);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(6px);
+}
+
+.menu button:hover{
+    background: rgba(255,255,255,0.12);
+    color:#ffffff;
+    transform: translateY(-1px);
 }
 
 .menu button.active{
-    background:#0d6efd;
+    background: linear-gradient(135deg, #0d6efd, #3b82f6);
     color:#fff;
+    border:none;
+    box-shadow: 0 4px 12px rgba(13,110,253,0.4);
 }
 
 /* CARD */
@@ -157,23 +173,19 @@ body{
 .table th:nth-child(9),
 .table td:nth-child(9){ width:320px; }
 
-/* CAMPOS */
 .table td:nth-child(1) input,
 .table td:nth-child(2) input{ width:70px; }
 
 .table td:nth-child(9) textarea{ width:100%; }
 
-/* 🔴 PRAZO ALERTA */
+/* PRAZO */
 .prazo-alerta{
     color:#d63031 !important;
     font-weight:600;
 }
 
-/* ===== ESTILO EXCEL ===== */
-
 .table{
     border-collapse:collapse !important;
-    margin-bottom:0;
 }
 
 .table thead{
@@ -215,14 +227,12 @@ input, select, textarea{
 .status-ok{ color:#00b894; cursor:pointer; }
 .status-x{ color:#d63031; cursor:pointer; }
 
-/* BOTÃO AZUL */
 .btn-primary{
     background: linear-gradient(135deg, #0d6efd, #0b5ed7);
     border:none;
     border-radius:10px;
     padding:10px 18px;
     font-weight:600;
-    box-shadow:0 6px 15px rgba(13,110,253,0.3);
 }
 
 .btn-danger{
@@ -232,10 +242,42 @@ input, select, textarea{
     border-radius:8px;
 }
 
-.area-botoes{
-    display:flex;
-    justify-content:center;
-    margin-top:20px;
+/* BOTÃO SALVAR TOPO DIREITO */
+.save-top-right{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:9999;
+}
+
+.save-top-right button{
+    border:none;
+    padding:10px 14px;
+    border-radius:12px;
+    background:#fff;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    cursor:pointer;
+}
+
+/* TOAST */
+.toast-salvo{
+    position:fixed;
+    top:70px;
+    right:18px;
+    background:#00b894;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:10px;
+    font-weight:600;
+    opacity:0;
+    transform:translateY(-10px);
+    transition:0.3s;
+    z-index:9999;
+}
+
+.toast-salvo.show{
+    opacity:1;
+    transform:translateY(0);
 }
 
 .back{
@@ -249,26 +291,20 @@ input, select, textarea{
     font-size:12px;
 }
 
-.export-footer{
-    position:fixed;
-    bottom:15px;
-    right:15px;
-}
-
-.export-footer button{
-    border:none;
-    padding:10px 12px;
-    border-radius:12px;
-    background:#fff;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-}
-
 </style>
 </head>
 
 <body>
 
 <a class="back" href="index.html">← Voltar</a>
+
+<!-- BOTÃO SALVAR NO TOPO DIREITO -->
+<div class="save-top-right">
+    <button onclick="salvar()">💾 Salvar</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast-salvo">SALVO COM SUCESSO</div>
 
 <div class="header" id="titulo"></div>
 
@@ -284,7 +320,7 @@ input, select, textarea{
 
 <div class="menu">
     <div class="menu-linha">
-        <button class="active" onclick="filtrarStatus('todos', this)">📊 Todos</button>
+        <button onclick="filtrarStatus('todos', this)">📊 Todos</button>
         <button onclick="filtrarStatus('ok', this)">✅ Concluídos</button>
         <button onclick="filtrarStatus('pendente', this)">❌ Pendentes</button>
     </div>
@@ -323,19 +359,40 @@ input, select, textarea{
 <button class="btn btn-primary" onclick="adicionarLinha()">+ ADICIONAR LINHA</button>
 </div>
 
-<div class="export-footer">
-<button onclick="window.print()">🖨 Imprimir</button>
-</div>
-
 <script>
 
-/* TODAS AS FUNÇÕES MANTIDAS INTACTAS */
 let filtroAtual = "todos";
+let filtrosAtivos = new Set();
 
 function filtrarStatus(tipo, btn){
-    filtroAtual = tipo;
-    document.querySelectorAll(".menu button").forEach(b=> b.classList.remove("active"));
-    btn.classList.add("active");
+
+    // 👉 se clicar em TODOS
+    if(tipo === "todos"){
+        filtrosAtivos.clear();
+
+        document.querySelectorAll(".menu button")
+            .forEach(b => b.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        filtroAtual = "todos";
+        aplicarFiltros();
+        return;
+    }
+
+    // remove destaque do TODOS
+    document.querySelectorAll(".menu button")[0].classList.remove("active");
+
+    // toggle botão
+    btn.classList.toggle("active");
+
+    // adiciona/remove filtro
+    if(filtrosAtivos.has(tipo)){
+        filtrosAtivos.delete(tipo);
+    } else {
+        filtrosAtivos.add(tipo);
+    }
+
     aplicarFiltros();
 }
 
@@ -361,15 +418,34 @@ function aplicarFiltros(){
 
         if(!texto.includes(busca)) mostrar = false;
 
-        if(filtroAtual === "ok" && status !== "✅") mostrar = false;
-        if(filtroAtual === "pendente" && status !== "❌") mostrar = false;
+if(filtrosAtivos.size === 0){
 
-        if(filtroAtual === "internado" && tipo !== "INTERNADO") mostrar = false;
-        if(filtroAtual === "externo" && tipo !== "EXTERNO") mostrar = false;
-        if(filtroAtual === "rec" && tipo !== "REC DO REC") mostrar = false;
+    if(filtroAtual === "ok" && status !== "✅") mostrar = false;
+    if(filtroAtual === "pendente" && status !== "❌") mostrar = false;
 
-        if(filtroAtual === "tecnica" && classe !== "TÉCNICA") mostrar = false;
-        if(filtroAtual === "medica" && classe !== "MÉDICA") mostrar = false;
+    if(filtroAtual === "internado" && tipo !== "INTERNADO") mostrar = false;
+    if(filtroAtual === "externo" && tipo !== "EXTERNO") mostrar = false;
+    if(filtroAtual === "rec" && tipo !== "REC DO REC") mostrar = false;
+
+    if(filtroAtual === "tecnica" && classe !== "TÉCNICA") mostrar = false;
+    if(filtroAtual === "medica" && classe !== "MÉDICA") mostrar = false;
+
+} else {
+
+    let passou = false;
+
+    if(filtrosAtivos.has("ok") && status === "✅") passou = true;
+    if(filtrosAtivos.has("pendente") && status === "❌") passou = true;
+
+    if(filtrosAtivos.has("internado") && tipo === "INTERNADO") passou = true;
+    if(filtrosAtivos.has("externo") && tipo === "EXTERNO") passou = true;
+    if(filtrosAtivos.has("rec") && tipo === "REC DO REC") passou = true;
+
+    if(filtrosAtivos.has("tecnica") && classe === "TÉCNICA") passou = true;
+    if(filtrosAtivos.has("medica") && classe === "MÉDICA") passou = true;
+
+    if(!passou) mostrar = false;
+}
 
         linha.style.display = mostrar ? "" : "none";
     });
@@ -386,14 +462,14 @@ function verificarPrazos(){
 
         const valor = inputPrazo.value;
         const dataPrazo = new Date(valor);
-        const hoje = new Date();
 
         if(!isNaN(dataPrazo)){
+            const hoje = new Date();
             const diff = (dataPrazo - hoje) / (1000 * 60 * 60 * 24);
 
             if(diff <= 3){
                 inputPrazo.classList.add("prazo-alerta");
-            }else{
+            } else {
                 inputPrazo.classList.remove("prazo-alerta");
             }
         }
@@ -402,15 +478,9 @@ function verificarPrazos(){
 
 const params = new URLSearchParams(window.location.search);
 let MES_ATUAL = params.get("mes") || "geral";
+MES_ATUAL = MES_ATUAL.toUpperCase();
 
-const mesesCorrigidos = {
-    marco:"MARÇO", abril:"ABRIL", maio:"MAIO", junho:"JUNHO",
-    julho:"JULHO", agosto:"AGOSTO", setembro:"SETEMBRO",
-    outubro:"OUTUBRO", novembro:"NOVEMBRO", dezembro:"DEZEMBRO",
-    janeiro:"JANEIRO", fevereiro:"FEVEREIRO"
-};
-
-MES_ATUAL = mesesCorrigidos[MES_ATUAL.toLowerCase()] || MES_ATUAL.toUpperCase();
+window.MES_ATUAL = MES_ATUAL;
 
 document.getElementById("titulo").innerText =
     `CONTROLE GERAL - ${MES_ATUAL}`;
@@ -452,29 +522,18 @@ function adicionarLinha(){
 
     tabela.appendChild(linha);
     atualizarKPIs();
-    aplicarFiltros();
 }
 
 function removerLinha(btn){
-    if(confirm("Tem certeza que deseja excluir esta linha?")){
+    if(confirm("Tem certeza?")){
         btn.closest("tr").remove();
         atualizarKPIs();
     }
 }
 
 function toggleStatus(el){
-    if(el.innerText === "❌"){
-        el.innerText = "✅";
-        el.classList.remove("status-x");
-        el.classList.add("status-ok");
-    }else{
-        el.innerText = "❌";
-        el.classList.remove("status-ok");
-        el.classList.add("status-x");
-    }
-
+    el.innerText = el.innerText === "❌" ? "✅" : "❌";
     atualizarKPIs();
-    aplicarFiltros();
 }
 
 function atualizarKPIs(){
@@ -486,7 +545,6 @@ function atualizarKPIs(){
 
     linhas.forEach(linha => {
         const status = linha.children[5].innerText;
-
         if(status === "✅") ok++;
         else pendente++;
     });
@@ -498,5 +556,81 @@ function atualizarKPIs(){
 
 </script>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJoW1Nv8HTzmnqlYi7NCUmreMVO2PMwlI",
+  authDomain: "controlegeralrevglosa.firebaseapp.com",
+  projectId: "controlegeralrevglosa",
+  storageBucket: "controlegeralrevglosa.firebasestorage.app",
+  messagingSenderId: "66712289834",
+  appId: "1:66712289834:web:f1e902f9c5f76e972d3953"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function getDocId(){
+    return window.MES_ATUAL || "GERAL";
+}
+
+async function salvar(){
+    const linhas = document.querySelectorAll("#tabela tbody tr");
+
+    const dados = [...linhas].map(l => ({
+        c1:l.children[0].querySelector("input")?.value||"",
+        c2:l.children[1].querySelector("input")?.value||"",
+        c3:l.children[2].querySelector("select")?.value||"",
+        c4:l.children[3].querySelector("select")?.value||"",
+        c5:l.children[4].innerText,
+        c6:l.children[5].innerText,
+        c7:l.children[6].querySelector("input")?.value||"",
+        c8:l.children[7].innerText,
+        c9:l.children[8].querySelector("textarea")?.value||"",
+        c10:l.children[9].innerText
+    }));
+
+    await setDoc(doc(db,"planilhas", getDocId()), { dados });
+
+    mostrarToast(); // 👈 aviso de sucesso
+}
+
+window.salvar = salvar;
+
+document.addEventListener("input", e=>{
+    if(e.target.closest("#tabela")) salvar();
+});
+
+async function carregar(){
+    const snap = await getDoc(doc(db,"planilhas", getDocId()));
+    if(!snap.exists()) return;
+
+    snap.data().dados.forEach(d=>{
+        adicionarLinha();
+
+        const rows = document.querySelectorAll("#tabela tbody tr");
+        const r = rows[rows.length-1];
+
+        r.children[0].querySelector("input").value = d.c1;
+        r.children[1].querySelector("input").value = d.c2;
+        r.children[2].querySelector("select").value = d.c3;
+        r.children[3].querySelector("select").value = d.c4;
+        r.children[4].innerText = d.c5;
+        r.children[5].innerText = d.c6;
+        r.children[6].querySelector("input").value = d.c7;
+        r.children[7].innerText = d.c8;
+        r.children[8].querySelector("textarea").value = d.c9;
+        r.children[9].innerText = d.c10;
+    });
+
+    atualizarKPIs();
+}
+
+setTimeout(carregar, 1200);
+
+</script>
+
 </body>
-</html>D
+</html>
